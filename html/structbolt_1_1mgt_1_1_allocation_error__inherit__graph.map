@@ -1,0 +1,10 @@
+<map id="bolt::mgt::AllocationError" name="bolt::mgt::AllocationError">
+<area shape="rect" id="node1" title=" " alt="" coords="94,304,261,331"/>
+<area shape="rect" id="node7" href="$structbolt_1_1mgt_1_1_out_of_memory.html" title=" " alt="" coords="5,379,168,405"/>
+<area shape="rect" id="node8" href="$structbolt_1_1mgt_1_1_task_too_big.html" title=" " alt="" coords="193,379,343,405"/>
+<area shape="rect" id="node2" href="$structbolt_1_1mgt_1_1_mgt_error.html" title=" " alt="" coords="112,229,243,256"/>
+<area shape="rect" id="node3" href="$structbolt_1_1_bolt_error.html" title=" " alt="" coords="126,155,229,181"/>
+<area shape="rect" id="node4" href="$classbolt_1_1_exception_base.html" title="Base class for all eyen exceptions." alt="" coords="108,80,247,107"/>
+<area shape="rect" id="node5" title=" " alt="" coords="50,5,169,32"/>
+<area shape="rect" id="node6" title=" " alt="" coords="193,5,297,32"/>
+</map>

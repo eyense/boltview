@@ -1,0 +1,17 @@
+<map id="/home/johny/programming/_EYEN/boltview/boltview/device_image.h" name="/home/johny/programming/_EYEN/boltview/boltview/device_image.h">
+<area shape="rect" id="node1" title=" " alt="" coords="365,5,540,61"/>
+<area shape="rect" id="node2" href="$fft__calculator_8h.html" title=" " alt="" coords="267,109,441,165"/>
+<area shape="rect" id="node3" href="$fft__utils_8h.html" title=" " alt="" coords="5,213,180,269"/>
+<area shape="rect" id="node10" href="$image__pointers_8h.html" title=" " alt="" coords="168,317,343,373"/>
+<area shape="rect" id="node12" href="$image__io_8tcc.html" title=" " alt="" coords="471,109,645,165"/>
+<area shape="rect" id="node14" href="$reduce_8h.html" title=" " alt="" coords="728,213,903,269"/>
+<area shape="rect" id="node15" href="$reduce_8tcc.html" title=" " alt="" coords="725,109,900,165"/>
+<area shape="rect" id="node8" href="$device__code_8h.html" title=" " alt="" coords="307,213,481,269"/>
+<area shape="rect" id="node4" href="$gpu__memory__manager_8h.html" title=" " alt="" coords="215,525,410,581"/>
+<area shape="rect" id="node5" href="$gpu__worker_8h.html" title=" " alt="" coords="292,629,467,685"/>
+<area shape="rect" id="node6" href="$scheduler_8tcc.html" title=" " alt="" coords="292,733,467,789"/>
+<area shape="rect" id="node7" href="$scheduler_8h.html" title=" " alt="" coords="292,837,467,893"/>
+<area shape="rect" id="node9" href="$gpu__worker_8tcc.html" title=" " alt="" coords="419,421,593,477"/>
+<area shape="rect" id="node11" href="$memory__cache_8h.html" title=" " alt="" coords="168,421,343,477"/>
+<area shape="rect" id="node13" href="$image__io_8h.html" title=" " alt="" coords="529,213,704,269"/>
+</map>

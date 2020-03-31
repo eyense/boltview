@@ -1,0 +1,12 @@
+<map id="bolt::mgt::MgtError" name="bolt::mgt::MgtError">
+<area shape="rect" id="node1" title=" " alt="" coords="509,81,640,108"/>
+<area shape="rect" id="node6" href="$structbolt_1_1mgt_1_1_allocation_error.html" title=" " alt="" coords="698,31,865,57"/>
+<area shape="rect" id="node9" href="$structbolt_1_1mgt_1_1_execution_error.html" title=" " alt="" coords="698,81,865,108"/>
+<area shape="rect" id="node10" href="$structbolt_1_1mgt_1_1_multithread_launch_error.html" title=" " alt="" coords="688,133,875,174"/>
+<area shape="rect" id="node2" href="$structbolt_1_1_bolt_error.html" title=" " alt="" coords="359,81,461,108"/>
+<area shape="rect" id="node3" href="$classbolt_1_1_exception_base.html" title="Base class for all eyen exceptions." alt="" coords="172,81,311,108"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,56,124,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="13,107,117,133"/>
+<area shape="rect" id="node7" href="$structbolt_1_1mgt_1_1_out_of_memory.html" title=" " alt="" coords="923,5,1085,32"/>
+<area shape="rect" id="node8" href="$structbolt_1_1mgt_1_1_task_too_big.html" title=" " alt="" coords="929,56,1079,83"/>
+</map>

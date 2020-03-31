@@ -1,0 +1,5 @@
+<map id="bolt::BinaryFunctorImageView&lt; TView1, TView2, TFunctor &gt;" name="bolt::BinaryFunctorImageView&lt; TView1, TView2, TFunctor &gt;">
+<area shape="rect" id="node1" title="Image view, which returns result of a functor." alt="" coords="25,199,193,255"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_binary_operator_image_view_base.html" title="Base class for image views implementing lazy evaluation of operators working on two image views." alt="" coords="8,109,209,151"/>
+<area shape="rect" id="node3" href="$classbolt_1_1_hybrid_image_view_base.html" title=" " alt="" coords="5,5,212,61"/>
+</map>

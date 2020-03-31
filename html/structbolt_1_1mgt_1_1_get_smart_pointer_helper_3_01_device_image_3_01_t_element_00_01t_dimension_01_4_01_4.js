@@ -1,0 +1,4 @@
+var structbolt_1_1mgt_1_1_get_smart_pointer_helper_3_01_device_image_3_01_t_element_00_01t_dimension_01_4_01_4 =
+[
+    [ "PointerType", "structbolt_1_1mgt_1_1_get_smart_pointer_helper_3_01_device_image_3_01_t_element_00_01t_dimension_01_4_01_4.html#a3434ca591c6580827b2085e523fa5822", null ]
+];

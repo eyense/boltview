@@ -1,0 +1,5 @@
+<map id="bolt::UnaryOperatorWithMetadataImageView&lt; TView, TOperator &gt;" name="bolt::UnaryOperatorWithMetadataImageView&lt; TView, TOperator &gt;">
+<area shape="rect" id="node1" title="View which applies unary operation for every element access and returns the output." alt="" coords="8,200,225,241"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_hybrid_image_view_base.html" title=" " alt="" coords="25,109,209,151"/>
+<area shape="rect" id="node3" href="$structbolt_1_1_vector_traits.html" title=" " alt="" coords="5,5,228,47"/>
+</map>

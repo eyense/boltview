@@ -1,0 +1,4 @@
+var structbolt_1_1mgt_1_1_get_smart_pointer_helper_3_01_texture_image_3_01_t_element_00_01t_dimension_00_01_t_cuda_type_01_4_01_4 =
+[
+    [ "PointerType", "structbolt_1_1mgt_1_1_get_smart_pointer_helper_3_01_texture_image_3_01_t_element_00_01t_dimension_00_01_t_cuda_type_01_4_01_4.html#abcb159b40ee9e7363a30333aac6fb238", null ]
+];

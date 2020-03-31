@@ -1,0 +1,5 @@
+<map id="bolt::BinaryOperatorImageViewBase&lt; TView1, TView2 &gt;" name="bolt::BinaryOperatorImageViewBase&lt; TView1, TView2 &gt;">
+<area shape="rect" id="node1" title="Base class for image views implementing lazy evaluation of operators working on two image views." alt="" coords="16,215,217,256"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_hybrid_image_view_base.html" title=" " alt="" coords="13,109,220,165"/>
+<area shape="rect" id="node3" href="$structbolt_1_1_vector_traits.html" title=" " alt="" coords="5,5,228,47"/>
+</map>

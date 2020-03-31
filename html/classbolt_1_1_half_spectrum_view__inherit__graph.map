@@ -1,0 +1,4 @@
+<map id="bolt::HalfSpectrumView&lt; TView &gt;" name="bolt::HalfSpectrumView&lt; TView &gt;">
+<area shape="rect" id="node1" title="A view which returns result of FFT in frequency domain, centered as physicist would expect...." alt="" coords="22,109,182,151"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_hybrid_image_view_base.html" title=" " alt="" coords="5,5,199,61"/>
+</map>

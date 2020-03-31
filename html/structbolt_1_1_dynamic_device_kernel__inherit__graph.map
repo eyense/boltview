@@ -1,0 +1,4 @@
+<map id="bolt::DynamicDeviceKernel&lt; TValue, tDimension &gt;" name="bolt::DynamicDeviceKernel&lt; TValue, tDimension &gt;">
+<area shape="rect" id="node1" title="Kernel stored on device." alt="" coords="5,95,187,136"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_dynamic_kernel_base.html" title="Base class for holding convolution kernel and its proportions." alt="" coords="11,5,181,47"/>
+</map>

@@ -1,0 +1,4 @@
+var structbolt_1_1_copy_direction_3_01t_from_is_device_view_00_01t_from_is_host_view_00_01true_00_01false_01_4 =
+[
+    [ "type", "structbolt_1_1_copy_direction_3_01t_from_is_device_view_00_01t_from_is_host_view_00_01true_00_01false_01_4.html#a6d705170104bc736abe43e774b345fb3", null ]
+];

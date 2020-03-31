@@ -1,0 +1,4 @@
+<map id="bolt::ConstSpectrumView&lt; TView &gt;" name="bolt::ConstSpectrumView&lt; TView &gt;">
+<area shape="rect" id="node1" title="a view which returns result of FFT in frequency domain, centered, flipped and mirrored as physicist w..." alt="" coords="17,109,187,151"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_hybrid_image_view_base.html" title=" " alt="" coords="5,5,199,61"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="bolt::CudaError" name="bolt::CudaError">
+<area shape="rect" id="node1" title=" " alt="" coords="244,229,355,256"/>
+<area shape="rect" id="node6" href="$structbolt_1_1_contiguous_memory_needed.html" title=" " alt="" coords="5,304,215,331"/>
+<area shape="rect" id="node7" href="$structbolt_1_1_cu_f_f_t_error.html" title=" " alt="" coords="239,304,359,331"/>
+<area shape="rect" id="node8" href="$structbolt_1_1_incompatible_view_sizes.html" title=" " alt="" coords="383,304,570,331"/>
+<area shape="rect" id="node2" href="$structbolt_1_1_bolt_error.html" title=" " alt="" coords="248,155,351,181"/>
+<area shape="rect" id="node3" href="$classbolt_1_1_exception_base.html" title="Base class for all eyen exceptions." alt="" coords="230,80,369,107"/>
+<area shape="rect" id="node4" title=" " alt="" coords="172,5,291,32"/>
+<area shape="rect" id="node5" title=" " alt="" coords="315,5,419,32"/>
+</map>

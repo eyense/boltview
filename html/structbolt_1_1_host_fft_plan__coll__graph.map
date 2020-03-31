@@ -1,0 +1,11 @@
+<map id="bolt::HostFftPlan&lt; TSizeType &gt;" name="bolt::HostFftPlan&lt; TSizeType &gt;">
+<area shape="rect" id="node1" title="Plan handle that runs on host, this should not be handled directly, use FftCalculator instead." alt="" coords="1276,73,1405,115"/>
+<area shape="rect" id="node2" href="$classbolt_1_1_host_image_view.html" title=" " alt="" coords="913,106,1092,162"/>
+<area shape="rect" id="node3" href="$classbolt_1_1_host_image_const_view.html" title=" " alt="" coords="645,106,864,162"/>
+<area shape="rect" id="node4" href="$classbolt_1_1_host_image_view_base.html" title=" " alt="" coords="312,85,539,127"/>
+<area shape="rect" id="node9" href="$classbolt_1_1_host_image_const_view.html" title=" " alt="" coords="649,26,861,82"/>
+<area shape="rect" id="node5" href="$structbolt_1_1_vector_traits.html" title=" " alt="" coords="5,85,228,127"/>
+<area shape="rect" id="node6" href="$classbolt_1_1_vector.html" title=" " alt="" coords="353,5,498,47"/>
+<area shape="rect" id="node7" href="$unionbolt_1_1_host_complex_type.html" title=" " alt="" coords="345,155,505,182"/>
+<area shape="rect" id="node8" href="$classbolt_1_1_host_image_view.html" title=" " alt="" coords="931,26,1075,82"/>
+</map>

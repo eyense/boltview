@@ -1,0 +1,21 @@
+<map id="/home/johny/programming/_EYEN/boltview/boltview/interpolated_view.h" name="/home/johny/programming/_EYEN/boltview/boltview/interpolated_view.h">
+<area shape="rect" id="node1" title=" " alt="" coords="141,5,315,61"/>
+<area shape="rect" id="node2" href="$geometrical__transformation_8h.html" title=" " alt="" coords="5,213,200,269"/>
+<area shape="rect" id="node3" href="$interpolation_8h.html" title=" " alt="" coords="141,109,315,165"/>
+<area shape="rect" id="node4" href="$procedural__views_8h.html" title=" " alt="" coords="225,213,399,269"/>
+<area shape="rect" id="node5" href="$fft__calculator_8tcc.html" title=" " alt="" coords="225,317,399,373"/>
+<area shape="rect" id="node7" href="$fft__utils_8h.html" title=" " alt="" coords="99,525,274,581"/>
+<area shape="rect" id="node16" href="$fft__utils_8tcc.html" title=" " alt="" coords="99,421,274,477"/>
+<area shape="rect" id="node17" href="$fft__views_8h.html" title=" " alt="" coords="423,317,598,373"/>
+<area shape="rect" id="node18" href="$reduce_8tcc.html" title=" " alt="" coords="622,317,797,373"/>
+<area shape="rect" id="node6" href="$fft__calculator_8h.html" title=" " alt="" coords="298,421,473,477"/>
+<area shape="rect" id="node12" href="$device__code_8h.html" title=" " alt="" coords="350,525,525,581"/>
+<area shape="rect" id="node14" href="$image__pointers_8h.html" title=" " alt="" coords="225,629,399,685"/>
+<area shape="rect" id="node8" href="$gpu__memory__manager_8h.html" title=" " alt="" coords="272,837,467,893"/>
+<area shape="rect" id="node9" href="$gpu__worker_8h.html" title=" " alt="" coords="349,941,523,997"/>
+<area shape="rect" id="node10" href="$scheduler_8tcc.html" title=" " alt="" coords="349,1045,523,1101"/>
+<area shape="rect" id="node11" href="$scheduler_8h.html" title=" " alt="" coords="349,1149,523,1205"/>
+<area shape="rect" id="node13" href="$gpu__worker_8tcc.html" title=" " alt="" coords="475,733,650,789"/>
+<area shape="rect" id="node15" href="$memory__cache_8h.html" title=" " alt="" coords="225,733,399,789"/>
+<area shape="rect" id="node19" href="$reduce_8h.html" title=" " alt="" coords="622,421,797,477"/>
+</map>
