@@ -163,7 +163,7 @@ TODO: links to install packages
 
 ## Documentation
 
-TODO: link to doc
+[Doxygen documentation](https://eyense.github.io/boltview/index.html)
 
 ## Contact
 
