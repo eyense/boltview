@@ -1,0 +1,8 @@
+build
+.idea
+CMakeLists.txt.user
+doc/html/*
+doc/latex/*
+project.4coder
+local/*
+*.swp
