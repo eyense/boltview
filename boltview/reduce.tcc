@@ -302,7 +302,6 @@ struct ReduceImplementation {
 			dim3 block(kBlockSize, 1, 1);
 			dim3 grid(block_count, reduced_size[0], reduced_size.kDimension >= 2 ? reduced_size[1] : 1);
 
-			std::cout << "Run more blocks\n";
 			auto tmp_size = size;
 			tmp_size[tDimension] = block_count;
 			DeviceImage<TOutputValue, TView::kDimension> tmp_buffer(tmp_size);
@@ -310,7 +309,6 @@ struct ReduceImplementation {
 			BOLT_CHECK_ERROR_AFTER_KERNEL("dimensionReduceKernel tmp buffer", grid, block);
 			run(tmp_buffer.constView(), output_view, dimension, initial_value, reduction_operator, execution_policy);
 		} else {
-			std::cout << "Run one block\n";
 			dim3 block(kBlockSize, 1, 1);
 			dim3 grid(1 + (size[tDimension] - 1) / block.x, reduced_size[0], reduced_size.kDimension >= 2 ? reduced_size[1] : 1);
 
