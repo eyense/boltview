@@ -89,6 +89,10 @@ inline WrongRegion3DErrorInfo getWrongRegionErrorInfo(const Region<3> &region) {
 	return WrongRegion3DErrorInfo(region);
 }
 
+inline WrongLongIntRegion1DErrorInfo getWrongRegionErrorInfo(const Region<1, int64_t> &region) {
+	return WrongLongIntRegion1DErrorInfo(region);
+}
+
 inline WrongLongIntRegion2DErrorInfo getWrongRegionErrorInfo(const Region<2, int64_t> &region) {
 	return WrongLongIntRegion2DErrorInfo(region);
 }
