@@ -453,8 +453,8 @@ template<>
 void checkSpectra(HostImage<DeviceComplexType, 2> & fft_spectrum){
 	auto frequency_size = fft_spectrum.size();
 	auto original_spectrum_view = fft_spectrum.constView();
-	auto half_spectrum_view  = halfSpectrumView(original_spectrum_view);
-	auto const_spectrum_view  = constSpectrumView(original_spectrum_view);
+	auto half_spectrum_view = halfSpectrumView(original_spectrum_view);
+	auto const_spectrum_view = constSpectrumView(original_spectrum_view);
 
 	BOOST_CHECK_EQUAL((topCorner(half_spectrum_view)), (Int2(0, -(frequency_size[1] - 1) / 2)));
 	BOOST_CHECK_EQUAL(half_spectrum_view.size(), frequency_size);
@@ -462,7 +462,7 @@ void checkSpectra(HostImage<DeviceComplexType, 2> & fft_spectrum){
 	auto top = topCorner(const_spectrum_view);
 	BOOST_CHECK_EQUAL((top), (Int2(-frequency_size[0] + 1, -frequency_size[1]/2)));
 	auto bot = top + const_spectrum_view.size();
-	BOOST_CHECK_EQUAL((bot), (Int2(frequency_size[0], frequency_size[1]/2)));
+	BOOST_CHECK_EQUAL((bot), (Int2(frequency_size[0], frequency_size[1]/2 + 1)));
 
 	for(int x = top[0]; x < bot[0]; x++){
 		for(int y = top[1]; y < bot[1]; y++){
@@ -496,7 +496,7 @@ void checkSpectra(HostImage<DeviceComplexType, 3> & fft_spectrum){
 	auto top = topCorner(const_spectrum_view);
 	BOOST_CHECK_EQUAL((top), (Int3(-frequency_size[0] + 1, -frequency_size[1]/2, -frequency_size[2]/2)));
 	auto bot = top + const_spectrum_view.size();
-	BOOST_CHECK_EQUAL((bot), (Int3(frequency_size[0], frequency_size[1]/2, frequency_size[2]/2)));
+	BOOST_CHECK_EQUAL((bot), (Int3(frequency_size[0], frequency_size[1]/2 + 1, frequency_size[2]/2 + 1)));
 
 	for(int x = top[0]; x < bot[0]; x++){
 		for(int y = top[1]; y < bot[1]; y++){

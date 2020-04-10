@@ -56,6 +56,8 @@ HalfSpectrumView<TView> halfSpectrumView(TView view) {
 }
 
 /// \brief a view which returns result of FFT in frequency domain, centered, flipped and mirrored as physicist would expect.
+/// The size of the ConstSpectrumView is allways a vector of odd numbers.
+/// It allows accessing the assymetric positions of even-sized spectra using both positive and negative indices.
 template<typename TView>
 class ConstSpectrumView : public HybridImageViewBase<TView::kDimension, typename TView::Policy> {
 public:
@@ -89,15 +91,21 @@ public:
 protected:
 	HalfSpectrumView<TView> halfspectrum_view_;
 
-	/// Return the size of the full fft spectrum.
+	/// \return the size of the full fft spectrum.
+	/// The size is allways a vector of odd numbers.
 	static SizeType fullSpectrumSize(SizeType half_spectrum_size) {
+		SizeType spectrum_size;
+
 		if (kDimension > 0) {
-			// The result can be either (half_spectrum_size[0] * 2 - 1) or (half_spectrum_size[0] * 2 - 2)
-			// depending on the size in real space. For now we take the more general case.
-			// TODO(martin): support both options.
-			half_spectrum_size[0] = half_spectrum_size[0] * 2 - 1;
+			// Inflate the halved dimension.
+			spectrum_size[0] = half_spectrum_size[0] * 2 - 1;
 		}
-		return half_spectrum_size;
+		// Make all the dimensions odd.
+		for (int d = 1; d < kDimension; ++d) {
+			spectrum_size[d] = half_spectrum_size[d] + ((half_spectrum_size[d] + 1) & 1);
+		}
+
+		return spectrum_size;
 	}
 };
 
