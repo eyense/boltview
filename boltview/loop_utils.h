@@ -19,10 +19,17 @@ BOLT_DECL_HYBRID
 TValue sumEachNeighbor(Int2 from, Int2 to, TValue init_value, TCallable callable)
 {
 	TValue sum = init_value;
-	Int2 index;
-	for(index[1] = from[1]; index[1] < to[1]; ++index[1]) {
-		for(index[0] = from[0]; index[0] < to[0]; ++index[0]) {
-			sum += callable(index);
+	int i = from[0];
+	int j = from[1];
+	for(; j < to[1]; ++j) {
+		for(; i < to[0] - 3; i+=4) {
+			sum += callable({i,j});
+			sum += callable({i+1,j});
+			sum += callable({i+2,j});
+			sum += callable({i+3,j});
+		}
+		for(; i < to[0]; ++i) {
+			sum += callable({i,j});
 		}
 	}
 	return sum;
@@ -40,10 +47,19 @@ TValue sumEachNeighbor(Int3 from, Int3 to, TValue init_value, TCallable callable
 {
 	TValue sum = init_value;
 	Int3 index;
-	for(index[2] = from[2]; index[2] < to[2]; ++index[2]) {
-		for(index[1] = from[1]; index[1] < to[1]; ++index[1]) {
-			for(index[0] = from[0]; index[0] < to[0]; ++index[0]) {
-				sum += callable(index);
+	int i = from[0];
+	int j = from[1];
+	int k = from[2];
+	for(; k < to[2]; ++k) {
+		for(; j < to[1]; ++j) {
+			for(; i < to[0] - 3; i+=4) {
+				sum += callable({i, j, k});
+				sum += callable({i+1, j, k});
+				sum += callable({i+2, j, k});
+				sum += callable({i+3, j, k});
+			}
+			for(; i < to[0]; ++i) {
+				sum += callable({i, j, k});
 			}
 		}
 	}

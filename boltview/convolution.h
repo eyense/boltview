@@ -12,6 +12,21 @@
 
 namespace bolt {
 
+/// \return Coordinates of beginning of the kernel, relative to kernel center
+template<typename TConvolutionKernel>
+BOLT_DECL_HYBRID
+Vector<int, TConvolutionKernel::kDimension> kernelStart(const TConvolutionKernel & kernel){
+	return -kernel.center();
+}
+
+
+/// \return Coordinates 1 behind of end of the kernel, relative to kernel center
+template<typename TConvolutionKernel>
+BOLT_DECL_HYBRID
+Vector<int, TConvolutionKernel::kDimension> kernelEnd(const TConvolutionKernel & kernel){
+	return kernel.size() - kernel.center();
+}
+
 
 /// Functor that holds convolution kernel and returns result of convolution
 template<typename TConvolutionKernel, typename TOutputElement>
@@ -59,21 +74,6 @@ struct KernelView<TConvolutionKernel, false>{
 		return kernel;
 	}
 };
-
-/// \return Coordinates of beginning of the kernel, relative to kernel center
-template<typename TConvolutionKernel>
-BOLT_DECL_HYBRID
-Vector<int, TConvolutionKernel::kDimension> kernelStart(const TConvolutionKernel & kernel){
-	return -kernel.center();
-}
-
-
-/// \return Coordinates 1 behind of end of the kernel, relative to kernel center
-template<typename TConvolutionKernel>
-BOLT_DECL_HYBRID
-Vector<int, TConvolutionKernel::kDimension> kernelEnd(const TConvolutionKernel & kernel){
-	return kernel.size() - kernel.center();
-}
 
 
 /// \return index to 1-dimensional array from given coordinates
@@ -222,9 +222,9 @@ public:
 	using Element = typename TStorage::value_type;
 
 	/// \param std_dev Standart deviation
-	explicit HybridGaussGenerator(Element variance):
-		variance_(variance),
-		size_(static_cast<int>(4*constSqrt(variance) + 0.5)*2+1),
+	explicit HybridGaussGenerator(Element std_dev):
+		std_dev_(std_dev),
+		size_(static_cast<int>(2*std_dev + 0.5)*2+1),
 		kernel_(size_/2+1)
 	{
 		computeKernel();
@@ -235,7 +235,7 @@ public:
 	/// the gauss peak will appear within the image. The constructor taking only std_dev is equivalent to this one with
 	/// numStdDevAtSize = 2 and size = (int)(std_dev * 2) * 2 + 1
 	explicit HybridGaussGenerator(int size, float num_variance_at_size):
-		variance_((size / 2) / num_variance_at_size),
+		std_dev_((size / 2) / num_variance_at_size),
 		size_(size),
 		kernel_(size_/2+1)
 	{
@@ -255,7 +255,7 @@ public:
 
 private:
 	int size_;
-	Element variance_;
+	Element std_dev_;
 	TStorage kernel_;
 
 	void computeKernel(){
@@ -263,7 +263,7 @@ private:
 
 		// Count half of the gaussian
 		for(int i = -size_/2; i <= 0; ++i){
-				Element res = exp(-((Element)i*i)/(2.0*variance_));
+				Element res = exp(-((Element)i*i)/(2.0*std_dev_*std_dev_));
 				kernel_[i+size_/2] = res;
 				sum += res;
 		}

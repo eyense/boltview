@@ -1,20 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(BoltView CXX CUDA)
+project(BoltView 
+	VERSION 1.0.0-rc1
+	LANGUAGES CXX CUDA
+	)
 
-
-option(BOLT_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
-option(BOLT_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
-
-
-if(BOLT_USE_UNIFIED_MEMORY)
-	add_definitions(-DBOLT_USE_UNIFIED_MEMORY)
-endif()
-
-option(BOLT_USE_THREAD_BUILDING_BLOCKS "Enable features that use thread building blocks" OFF)
-if(BOLT_USE_THREAD_BUILDING_BLOCKS)
-	add_definitions(-DBOLT_USE_THREAD_BUILDING_BLOCKS)
-endif()
+option(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS "Enable features that use thread building blocks" OFF)
+option(${PROJECT_NAME}_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
+option(${PROJECT_NAME}_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
 
 # Custom CMake commands
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -25,56 +18,12 @@ detect_clang_gpu()
 
 include(test)
 
-# # Find includes in corresponding build directories
-# set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-#
-# # C++ settings
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -Wall -ffast-math")
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fPIC -Wall -ffast-math")
-#
-# if (USE_CLANG_GPU)
-# 	# disable some clang warnings
-# 	set(CLANG_GPU_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field -Wno-unused-local-typedef -Wno-unused-function")
-# 	set(CLANG_GPU_C_FLAGS ${CMAKE_C_FLAGS})
-# endif()
-#
 # Boost
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 
 add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.53.0 COMPONENTS system filesystem REQUIRED)
-
-
-# # Cuda
-# #find_package(CUDA)
-# if(NOT BOLT_GPU_ARCH)
-# 	if("${CUDA_VERSION}" VERSION_GREATER 7.5)
-# 		set(BOLT_GPU_ARCH "compute_61")
-# 	else()
-# 		set(BOLT_GPU_ARCH "compute_50")
-# 	endif()
-# endif()
-# if(NOT BOLT_GPU_CODE)
-# 	if("${CUDA_VERSION}" VERSION_GREATER 7.5)
-# 		set(BOLT_GPU_CODE "sm_61")
-# 	else()
-# 		set(BOLT_GPU_CODE "sm_50")
-# 	endif()
-# endif()
-
-# if (USE_CLANG_GPU)
-# 	set(CLANG_GPU_CXX_FLAGS "${CLANG_GPU_CXX_FLAGS} --cuda-gpu-arch=${BOLT_GPU_CODE}")
-# 	set(CLANG_GPU_C_FLAGS "${CLANG_GPU_C_FLAGS} --cuda-gpu-arch=${BOLT_GPU_CODE}")
-# else()
-# 	#set(NVCC_CPP11_FLAG "-std=c++11")
-# 	#SET(CUDA_PROPAGATE_HOST_FLAGS OFF)
-# 	#SET(CUDA_GENCODE_FLAGS "-gencode arch=compute_30,code=sm_30 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=${BOLT_GPU_ARCH},code=${BOLT_GPU_CODE}")
-# 	#set(CUDA_NVCC_FLAGS "${NVCC_CPP11_FLAG} -Xcudafe --display_error_number -Xcudafe --diag_suppress=2906 -Wno-deprecated-declarations -Xcompiler -fPIC ${CUDA_GENCODE_FLAGS} --use_fast_math   --expt-extended-lambda --generate-line-info") ## Add -gencode arch=compute_20,code=sm_20 etc. If you need other how support
-# endif()
-
-# set(CMAKE_CUDA_FLAGS "-Xcompiler -fPIC -gencode arch=${BOLT_GPU_ARCH},code=${BOLT_GPU_CODE} --use_fast_math   --expt-extended-lambda --generate-line-info" CACHE STRING "")
 
 set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/image_stack.h"
@@ -90,17 +39,15 @@ set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/math/quaternion.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/math/vector.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/convolution_kernels.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/resource_constraints.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/scheduler_configuration.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/task_interface.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/task_base.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/device_code.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/memory_cache.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_worker.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_memory_manager.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_worker_configuration.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/image_pointers.h"
-	# "${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/scheduler.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_memory_manager.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_worker.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/image_pointers.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/memory_cache.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/resource_constraints.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/scheduler_configuration.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/scheduler.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/task_base.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/task_interface.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/variadic_templates.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/interpolation.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/device_properties.h"
@@ -154,13 +101,9 @@ set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/view_policy.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/loop_utils.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/exceptions.h"
-)
-
-set(${PROJECT_NAME}_FFT_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_utils.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_views.h"
-	)
-
+)
 
 set(${PROJECT_NAME}_TCC
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/image_io.tcc"
@@ -173,24 +116,33 @@ set(${PROJECT_NAME}_TCC
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/texture_image_view.tcc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/operators.tcc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/cuda_utils.tcc"
-)
-
-set(${PROJECT_NAME}_TCC
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_utils.tcc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_calculator.tcc"
-	)
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/gpu_memory_manager.tcc"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/mgt/scheduler.tcc"
+)
 
-if(BOLT_ENABLE_FFT)
-	set(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_FFT_HEADERS})
-	set(${PROJECT_NAME}_TCC ${${PROJECT_NAME}_TCC} ${${PROJECT_NAME}_FFT_TCC})
-endif(BOLT_ENABLE_FFT)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 add_library(bolt INTERFACE)
 target_compile_features(bolt INTERFACE cxx_std_14)
 target_sources(bolt INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_HEADERS}>)
-target_link_libraries(bolt INTERFACE Boost::filesystem "$<$<BOOL:${BOLT_USE_THREAD_BUILDING_BLOCKS}>:tbb>")
-target_include_directories(bolt INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>")
-target_compile_options(bolt INTERFACE "$<$<BUILD_INTERFACE:$<COMPILE_LANGUAGE:CUDA>>:--expt-extended-lambda>")
+target_link_libraries(bolt INTERFACE 
+				Boost::filesystem 
+				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS\}>:tbb>"
+				)
+target_include_directories(bolt INTERFACE 
+				"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+				"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+				)
+target_compile_options(bolt INTERFACE 
+				"$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>"
+				)
+target_compile_definitions(bolt INTERFACE
+				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS\}>:BOLT_USE_THREAD_BUILDING_BLOCKS>"
+				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_UNIFIED_MEMORY\}>:BOLT_USE_UNIFIED_MEMORY>"
+				)
 
 
 # Breakpoints
@@ -200,34 +152,34 @@ set(${PROJECT_NAME}_BPLIST
 	${${PROJECT_NAME}_TCC}
 )
 
-option(BOLT_ENABLE_MGT "Compile module for multithreaded gpu usage." ON)
-
-if (BOLT_ENABLE_MGT)
-	add_subdirectory(boltview/mgt)
-endif (BOLT_ENABLE_MGT)
 
 include(breakpoints)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
 endif()
 
-add_subdirectory(tests)
+# add_subdirectory(tests)
 # add_subdirectory(examples)
 
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-set(PROJECT_CMAKE_CONFIG_DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake)
-
+write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
+                                 VERSION ${PROJECT_VERSION}
+                                 COMPATIBILITY SameMajorVersion)
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/BoltViewConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/BoltViewConfig.cmake
-    INSTALL_DESTINATION
-        ${PROJECT_CMAKE_CONFIG_DESTINATION})
+				"${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+				"${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+				INSTALL_DESTINATION
+				${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
-
-install(TARGETS bolt bolt_mgt
-        PUBLIC_HEADER
-        DESTINATION include
+install(TARGETS bolt EXPORT ${PROJECT_NAME}_Targets)
+install(EXPORT ${PROJECT_NAME}_Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+              "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+install(DIRECTORY boltview
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	)
 
 # install(FILES 
@@ -237,24 +189,20 @@ install(TARGETS bolt bolt_mgt
 # 	DESTINATION include/boltview
 # 	)
 
-install(DIRECTORY
-	boltview
-	DESTINATION include
-	)
 
 
-install(
-    FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/BoltViewConfig.cmake"
-    DESTINATION
-        ${PROJECT_CMAKE_CONFIG_DESTINATION})
+# install(
+#     FILES
+#         "${CMAKE_CURRENT_BINARY_DIR}/BoltViewConfig.cmake"
+#     DESTINATION
+#         ${PROJECT_CMAKE_CONFIG_DESTINATION})
 
-# set(CPACK_GENERATOR TGZ;STGZ)
+set(CPACK_GENERATOR TGZ;STGZ;DEB;RPM)
 # set(CPACK_SOURCE_GENERATOR TGZ)
 
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+# set(CPACK_PACKAGE_VERSION_MAJOR "1")
+# set(CPACK_PACKAGE_VERSION_MINOR "0")
+# set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(CPACK_PACKAGE_CONTACT "jan.kolomaznik@eyen.se")
 set(CPACK_PACKAGE_VENDOR "Eyen SE")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jan Kolomaznik")

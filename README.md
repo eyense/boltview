@@ -149,9 +149,8 @@ Each tries to present a simple usage pattern for the concepts used.
 
 ## License
 
-The library is available under the [AGLPL](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
-
-Contact us (*boltview*@*eyen.se*) in case of projects requiring commercial license.
+For non-commercial use, the library is available under the [AGLPL](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
+For commercial use, please contact us at *boltview*@*eyen.se* for licesing options.
 
 ## Download and Installation
 

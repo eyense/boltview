@@ -144,6 +144,7 @@ void loadToSharedMemory(TView view, TPolicy policy,	typename TView::Element data
 
 	int loopStride = product(dim3ToInt<3>(blockDim));
 
+	//TODO(johny) - check
 	//Jarda: I have add the overlap here.
 	// I am confident that it should be this way,
 	// but the code was somehow working without overlap if all dimensions were grearer then block size. I do not know why...

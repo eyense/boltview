@@ -10,7 +10,7 @@ namespace bolt {
 
 
 /// Test kernel with all weights constant
-template<int tDimension, int tValue>
+template<typename TType, int tDimension>
 class ConstKernel {
 public:
 	static const bool kIsDynamicallyAllocated = false;
@@ -20,13 +20,13 @@ public:
 
 
 	BOLT_DECL_HYBRID
-	ConstKernel(Vector<int, tDimension> size, Vector<int, tDimension> center):
+	ConstKernel(TType val, Vector<int, tDimension> size, Vector<int, tDimension> center):
 		size_(size), center_(center)
 	{}
 
 	BOLT_DECL_HYBRID
-	int operator[](Vector<int, tDimension>  /*index*/) const{
-		return tValue;
+	TType operator[](Vector<int, tDimension>  /*index*/) const{
+		return value_;
 	}
 
 	BOLT_DECL_HYBRID
@@ -40,6 +40,7 @@ public:
 	}
 
 private:
+	TType value_;
 	Vector<int, tDimension> size_;
 	Vector<int, tDimension> center_;
 };

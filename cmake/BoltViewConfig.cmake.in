@@ -1,11 +1,9 @@
 @PACKAGE_INIT@
 
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+check_required_components("@PROJECT_NAME@")
 
-# Avoid repeatedly including the targets
-# if(NOT TARGET hello::hello)
-#     # Provide path for scripts
-#     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-#
-#     include(${CMAKE_CURRENT_LIST_DIR}/helloTargets.cmake)
-# endif()
-#
+option(@PROJECT_NAME@_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
+option(@PROJECT_NAME@_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
+option(@PROJECT_NAME@_USE_THREAD_BUILDING_BLOCKS "Enable features that use thread building blocks" OFF)
+

@@ -244,7 +244,7 @@ struct DefaultTransformLocatorPolicy : DefaultTransformPolicy<TView1, TView2> {
 // };
 template<typename TView1, typename TView2, BorderHandling tBorderHandling = BorderHandling::kRepeat, bool tPreloadToSharedMemory = true>
 DefaultTransformLocatorPolicy<TView1, TView2, tBorderHandling, tPreloadToSharedMemory>
-	getDefaultConvolutionPolicy(TView1  /*view1*/, TView2  /*view2*/){
+getDefaultConvolutionPolicy(TView1  /*view1*/, TView2  /*view2*/){
 	return DefaultTransformLocatorPolicy<TView1, TView2, tBorderHandling, tPreloadToSharedMemory>();
 }
 
