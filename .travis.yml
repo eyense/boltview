@@ -3,38 +3,54 @@ language: cpp
 sudo: enabled
 
 compiler:
-  - gcc
+- gcc
 
 matrix:
   include:
-    - name: CUDA 10
-      env:
-      - CUDA=10.2.89-1
-      - CUDA_SHORT=10.2
-      - UBUNTU_VERSION=ubuntu1804
-      dist: bionic
+  - name: CUDA 10
+    env:
+    - CUDA=10.2.89-1
+    - CUDA_SHORT=10.2
+    - UBUNTU_VERSION=ubuntu1804
+    dist: bionic
 
 addons:
   apt:
     update: true
 
 before_install:
-  - sudo apt-get -y install libboost-all-dev libfftw3-dev libtbb-dev
-  - INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
-  - wget http://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/${INSTALLER}
-  - sudo dpkg -i ${INSTALLER}
-  - wget https://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/7fa2af80.pub
-  - sudo apt-key add 7fa2af80.pub
-  - sudo apt update -qq
-  - sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-} cuda-cufft-dev-${CUDA_SHORT/./-}
-  - sudo apt clean
-  - CUDA_HOME=/usr/local/cuda-${CUDA_SHORT}
-  - LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-  - PATH=${CUDA_HOME}/bin:${PATH}
+- sudo apt-get -y install libboost-all-dev libfftw3-dev libtbb-dev
+- INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
+- wget http://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/${INSTALLER}
+- sudo dpkg -i ${INSTALLER}
+- wget https://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/7fa2af80.pub
+- sudo apt-key add 7fa2af80.pub
+- sudo apt update -qq
+- sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-}
+  cuda-cufft-dev-${CUDA_SHORT/./-}
+- sudo apt clean
+- CUDA_HOME=/usr/local/cuda-${CUDA_SHORT}
+- LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+- PATH=${CUDA_HOME}/bin:${PATH}
 
 before_script:
-    - mkdir build
-    - cd build
-    - cmake .. -DBoltView_ENABLE_FFT=OFF
+- mkdir build
+- cd build
+- cmake .. -DBoltView_ENABLE_FFT=OFF
 
-script: make
+script:
+- make
+- make package
+
+deploy:
+  provider: releases
+  api_key:
+    secure: F9et48hg8W2iZEiRoQwu2dpevX18bsq4oH103zp8PGYsCUy6EMkU8WDRrCxuVjokn4iChisnLQEnr+5dtjN2eXnQEK+gPF4xcDCKfrZD5dh2SwCOCIUIAK/Nz3EosMYGpbvVXR44LdXAO4WvGa3jfHZMKs/Cl2JGrckUkg88n92AfCKxmmrjmoBRVTODKfFaBgCcwmzaSlmsVqzP38+EZ4pV5S5Azumx/5flNVoKz0hh3174MoA3b13ABI7DmjycQkUu7SOM/uUPnGwrZ7zqUWtRYQzmN6yBTNE4M1p3/d52C5j6euDMhVNw28NiDqbrx/v6UMqck4e712tP2ikdY+a2gLjpcskTqbtAtXhGkSEeavsr0hN0xDE4Ki0K/4sfrdgXMlienn2dEUQOvzBY0ktZPaGNBPtQzCYJYkMA2tv0p/XNmy9LLWEQ8+CJfgn8TyHd0SxljoUKYiHJibLggjGnvdeU2axvdtH9krzFNEF7FIDTGYVcQZxh05z5TIUftYfN481FzDdU0xJRTKFH5+hN0hh6EpiyKYVhTrqT72TBW4d9+T/17KaoB2bihkw4w335VHUA1IoYRz7IhYBz6hmtS09Cepo0RswZmbrhfat6l6cFIV4gso0Mpw2UwW1UWqmoDPqevNb9NJZcKQL8VfP3Sfz3k1zKS3VqC+GAH3A=
+  skip_cleanup: true
+  file_glob: true
+  file: 
+    - BoltView-*-Linux.deb
+    - BoltView-*-Linux.sh
+    - BoltView-*-Linux.tar.gz
+  on:
+    tags: true
