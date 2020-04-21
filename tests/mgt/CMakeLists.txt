@@ -10,7 +10,6 @@ add_executable(mgt_test
 
 target_link_libraries(mgt_test
 	boost_system
-	bolt_mgt
 	bolt
 	${CUFFT_LIB}
 	${TBB}
@@ -27,7 +26,6 @@ target_link_libraries(memory_cache_test
 	boost_system
 	bolt
 	${CUFFT_LIB}
-	bolt_mgt
 	${TBB}
 	)
 

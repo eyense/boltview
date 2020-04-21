@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(BoltView_tests CXX CUDA)
 
 
-option(BOLT_ENABLE_TESTS "Enable compilation of tests" ON)
-if (BOLT_ENABLE_TESTS)
+if (BoltView_ENABLE_TESTS)
 	option(BOLT_ENABLE_AUTOMATED_TESTS "Enable running automated tests using 'make test'" ON)
 	if (BOLT_ENABLE_AUTOMATED_TESTS)
 		enable_testing()
@@ -43,18 +42,18 @@ if(BOLT_ENABLE_FFT)
 endif(BOLT_ENABLE_FFT)
 
 
-if(BOLT_ENABLE_TESTS)
+if(BoltView_ENABLE_TESTS)
 	if (!USE_CLANG_GPU)
 		# there were problems with cudaTextureObject_t type in clang
 		list( APPEND ${PROJECT_NAME}_TESTS "texture_image_test")
 	endif()
 
 	bolt_test_suite("." ${PROJECT_NAME}_TESTS "")
-	if(BOLT_ENABLE_FFT)
+	if(BoltView_ENABLE_FFT)
 		# link cufft library
 		find_library(CUFFT NAME cufft PATHS /usr/local/cuda/lib64)
 		target_link_libraries(fft_utils_test ${CUFFT} -lfftw3f -lm)
-	endif(BOLT_ENABLE_FFT)
+	endif(BoltView_ENABLE_FFT)
 
 	target_link_libraries(device_future_test pthread)
 endif()

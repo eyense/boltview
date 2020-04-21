@@ -82,7 +82,7 @@ BOLT_AUTO_TEST_CASE(ConstKernelTest) {
 	auto checker_board = ConstantImageView<int,2>{1, Int2(8, 8)};
 	auto out_view = image_out.view();
 
-	convolution(checker_board, out_view, ConstKernel<2, multiplier>(Int2(3, 3), Int2(1, 1)));
+	convolution(checker_board, out_view, ConstKernel<int, 2>(multiplier, Int2(3, 3), Int2(1, 1)));
 
 	for (int i = 0; i < 8; ++i) {
 		for (int j = 0; j < 8; ++j) {
@@ -101,7 +101,7 @@ BOLT_AUTO_TEST_CASE(ConstKernelTestForeach) {
 	copy(checker_board, image_in.view());
 	auto out_view = image_out.view();
 
-	convolutionForeach(image_in.constView(), out_view, ConstKernel<2, multiplier>(Int2(3, 3), Int2(1, 1)));
+	convolutionForeach(image_in.constView(), out_view, ConstKernel<int, 2>(multiplier, Int2(3, 3), Int2(1, 1)));
 
 	for (int i = 0; i < 8; ++i) {
 		for (int j = 0; j < 8; ++j) {
@@ -118,7 +118,7 @@ BOLT_AUTO_TEST_CASE(HostConstKernelTest) {
 	auto checker_board = checkerboard(1, 3, Int2(2, 2), Int2(8, 8));
 	auto out_view = image_out.view();
 
-	convolution(checker_board, out_view, ConstKernel<2, multiplier>(Int2(3, 3), Int2(1, 1)));
+	convolution(checker_board, out_view, ConstKernel<int, 2>(multiplier, Int2(3, 3), Int2(1, 1)));
 
 	for (int i = 1; i < 7; ++i) {
 		for (int j = 1; j < 7; ++j) {
@@ -143,7 +143,7 @@ BOLT_AUTO_TEST_CASE(HostConstKernelTestForeach) {
 	copy(checker_board, image_in.view());
 	auto out_view = image_out.view();
 
-	convolutionForeach(image_in.constView(), out_view, ConstKernel<2, multiplier>(Int2(3, 3), Int2(1, 1)));
+	convolutionForeach(image_in.constView(), out_view, ConstKernel<int, 2>(multiplier, Int2(3, 3), Int2(1, 1)));
 
 	for (int i = 1; i < 7; ++i) {
 		for (int j = 1; j < 7; ++j) {
@@ -165,7 +165,7 @@ BOLT_AUTO_TEST_CASE(DeviceConstKernelTest) {
 
 	auto checker_board = checkerboard(3, 2, Int2(2, 2), Int2(8, 8));
 
-	convolution(checker_board, image.view(), ConstKernel<2, 1>(Int2(3, 3), Int2(1, 1)));
+	convolution(checker_board, image.view(), ConstKernel<int, 2>(1, Int2(3, 3), Int2(1, 1)));
 
 	copy(image.constView(), image_out.view());
 
@@ -189,7 +189,7 @@ BOLT_AUTO_TEST_CASE(DeviceConstKernelTestForeach) {
 
 	auto checker_board = checkerboard(3, 2, Int2(2, 2), Int2(8, 8));
 
-	convolutionForeach(checker_board, image.view(), ConstKernel<2, 1>(Int2(3, 3), Int2(1, 1)));
+	convolutionForeach(checker_board, image.view(), ConstKernel<int, 2>(1, Int2(3, 3), Int2(1, 1)));
 
 	copy(image.constView(), image_out.view());
 
@@ -770,7 +770,7 @@ BOLT_AUTO_TEST_CASE(ConstHost3DTest) {
 		linearAccess(view, i) = 1;
 	}
 
-	convolution(image.constView(), view_out, ConstKernel<3, 1>(Int3(3, 3, 3), Int3(1, 1, 1)));
+	convolution(image.constView(), view_out, ConstKernel<int, 3>(1, Int3(3, 3, 3), Int3(1, 1, 1)));
 
 	for(int i = 0; i < 8*8*8; ++i){
 		BOOST_CHECK_EQUAL(linearAccess(view_out, i), 27);
@@ -787,7 +787,7 @@ BOLT_AUTO_TEST_CASE(ConstHost3DTestForeach) {
 		linearAccess(view, i) = 1;
 	}
 
-	convolutionForeach(image.constView(), view_out, ConstKernel<3, 1>(Int3(3, 3, 3), Int3(1, 1, 1)));
+	convolutionForeach(image.constView(), view_out, ConstKernel<int, 3>(1, Int3(3, 3, 3), Int3(1, 1, 1)));
 
 	for(int i = 0; i < 8*8*8; ++i){
 		BOOST_CHECK_EQUAL(linearAccess(view_out, i), 27);

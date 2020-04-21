@@ -7,6 +7,7 @@ project(BoltView
 option(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS "Enable features that use thread building blocks" OFF)
 option(${PROJECT_NAME}_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
 option(${PROJECT_NAME}_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
+option(${PROJECT_NAME}_ENABLE_TESTS "Enable compilation of tests" ON)
 
 # Custom CMake commands
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -157,11 +158,16 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
 endif()
 
-# add_subdirectory(tests)
+if(${PROJECT_NAME}_ENABLE_TESTS)
+	add_subdirectory(tests)
+endif()
 # add_subdirectory(examples)
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0-rc.1")
 
 write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
-                                 VERSION ${PROJECT_VERSION}
+	VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
                                  COMPATIBILITY SameMajorVersion)
 configure_package_config_file(
 				"${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
@@ -199,9 +205,6 @@ install(DIRECTORY boltview
 set(CPACK_GENERATOR TGZ;STGZ;DEB)
 # set(CPACK_SOURCE_GENERATOR TGZ)
 
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "0-rc.1")
 set(CPACK_PACKAGE_CONTACT "jan.kolomaznik@eyen.se")
 set(CPACK_PACKAGE_VENDOR "Eyen SE")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jan Kolomaznik")
