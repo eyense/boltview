@@ -1,4 +1,4 @@
-if(BOLT_USE_THREAD_BUILDING_BLOCKS)
+if(BoltView_USE_THREAD_BUILDING_BLOCKS)
 	set(TBB tbb)
 endif()
 
