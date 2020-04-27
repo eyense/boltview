@@ -59,6 +59,15 @@ void Timer::printAll() {
 	}
 }
 
+void Timer::printCSV(const std::string &group_name) {
+	for(const auto &i : intervals_){
+		std::cout << group_name << ";";
+		std::cout << name_ << ";";
+		std::cout << i.first << ";";
+		std::cout << i.second.wall * 0.000000001 << "\n";
+	}
+}
+
 
 void BenchmarkManager::add(const std::string &name, std::function<void(Timer&)> func){
 	benchs_.push_back(std::make_pair(name, func));
@@ -78,6 +87,13 @@ void BenchmarkManager::runAll(){
 void BenchmarkManager::printAll(){
 	for(auto t : timers_){
 		t.printAll();
+		std::cout << '\n';
+	}
+}
+
+void BenchmarkManager::printCSV(const std::string &group_name){
+	for(auto t : timers_){
+		t.printCSV(group_name);
 		std::cout << '\n';
 	}
 }

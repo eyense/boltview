@@ -152,12 +152,40 @@ Each tries to present a simple usage pattern for the concepts used.
 For non-commercial use, the library is available under the [AGLPL](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
 For commercial use, please contact us at *boltview*@*eyen.se* for licesing options.
 
-## Download and Installation
+## Installation and Usage
 
+The library is header only, so its usage in your project should be quite straightforward.
+You have several options:
 
+ * Download an install package from the [release page](https://github.com/eyense/boltview/releases) - this will put the headers in the system `include` dir and cmake config files into system `share` dir.
+ * Download the sources or clone the repository and do following:
+ 	```bash
+	cd <boltview_root_dir>
+	mkdir build
+	cd build
+	cmake .. -DCMAKE_INSTALL_PREFIX=<your_preffered_install_directory>
+	make -j<choose number of processes> #this will compile the unit tests
+	make install
+	```
+BoltView has several dependencies:
+ * [CUDA](https://developer.nvidia.com/cuda-zone)
+ * [Boost](https://www.boost.org/)
+ * [CMake](https://cmake.org/)
+ * [Threading Building Blocks (TBB)](https://github.com/oneapi-src/oneTBB) - optional
+	
+Minimal `CMakeLists.txt` for your project can look like this:
+```
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-TODO: links to install packages
+project(MyProject LANGUAGES CXX CUDA)
 
+find_package(BoltView REQUIRED)
+find_package(Boost 1.53.0 COMPONENTS system filesystem program_options REQUIRED)
+
+add_executable(maypp main.cu)
+target_compile_features(maypp INTERFACE cxx_std_14)
+target_link_libraries(maypp Boost::program_options Boost::filesystem BoltView::bolt)
+```
 
 
 ## Documentation

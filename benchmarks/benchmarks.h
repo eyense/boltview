@@ -30,6 +30,7 @@ public:
 
 	/// Print all intervals
 	void printAll();
+	void printCSV(const std::string &group_name);
 
 	class Interval {
 	public:
@@ -61,8 +62,8 @@ private:
 		const boost::timer::cpu_times &elapsed);
 
 	std::string name_;
-	typedef std::pair<std::string, boost::timer::cpu_times> str_times;
-	std::vector<str_times> intervals_;
+	using StringTime = std::pair<std::string, boost::timer::cpu_times>;
+	std::vector<StringTime> intervals_;
 };
 
 /// Manages benchmarks
@@ -79,6 +80,7 @@ public:
 
 	/// Print results of all benchmarks
 	void printAll();
+	void printCSV(const std::string &group_name);
 
  private:
 	typedef std::pair<std::string, std::function<void(Timer&)>> str_func;
