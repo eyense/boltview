@@ -9,7 +9,7 @@
 namespace bolt {
 
 template<typename TView>
-struct DefaultForEachPolicy {
+struct DefaultForEachPolicyBase {
 #if defined(__CUDACC__)
 	static BOLT_DECL_HYBRID dim3 blockSize()
 	{
@@ -20,6 +20,14 @@ struct DefaultForEachPolicy {
 	{
         	return detail::defaultGridSizeForBlockDim(dataSize(view), blockSize());
 	}
+#endif  // __CUDACC__
+
+};
+
+template<typename TView, typename TBase>
+struct DefaultForEachPolicyMixin: TBase {
+#if defined(__CUDACC__)
+	using Base = TBase;
 
 	static BOLT_DECL_HYBRID dim3 maxGridSize()
 	{
@@ -28,7 +36,7 @@ struct DefaultForEachPolicy {
 
 	static BOLT_DECL_HYBRID dim3 gridCount(const TView &view)
 	{
-		const dim3 grid_count = gridSize(view);
+		const dim3 grid_count = Base::gridSize(view);
 		const dim3 max_size = maxGridSize();
 		return  detail::defaultKernelThreadGeometry(grid_count, max_size);
 	}
@@ -36,7 +44,7 @@ struct DefaultForEachPolicy {
 	static BOLT_DECL_HYBRID dim3 iterationCounts(const TView &view)
 	{
 		const dim3 max_grid_size = maxGridSize();
-		const dim3 grid_count =  gridSize(view);
+		const dim3 grid_count =  Base::gridSize(view);
 		return detail::defaultIterationCountsPerKernel( grid_count, max_grid_size);
 	}
 
@@ -49,14 +57,14 @@ struct DefaultForEachPolicy {
 	static BOLT_DECL_HYBRID Vector<int, 1> pointCoordinates(const TView &view, const Vector<int, 1>& base, int index)
 	{
 		const dim3 max_grid_size = maxGridSize();
-		const dim3 block_size = blockSize();
+		const dim3 block_size = Base::blockSize();
 		return  detail::defaultPointCoordinates( base, index, max_grid_size, block_size);
 	}
 
 	static BOLT_DECL_HYBRID Vector<int, 2> pointCoordinates(const TView &view, const Vector<int, 2>& base, int index)
 	{
 		const dim3 max_grid_size = maxGridSize();
-		const dim3 block_size = blockSize();
+		const dim3 block_size = Base::blockSize();
 		const dim3 iteration_counts = iterationCounts(view);
 		return detail:: defaultPointCoordinates(base, index, max_grid_size, block_size, iteration_counts);
 	}
@@ -64,7 +72,7 @@ struct DefaultForEachPolicy {
 	static BOLT_DECL_HYBRID Vector<int, 3> pointCoordinates(const TView &view, const Vector<int, 3>& base, int index)
 	{
 		const dim3 max_grid_size = maxGridSize();
-		const dim3 block_size = blockSize();
+		const dim3 block_size = Base::blockSize();
 		const dim3 iterationsCount = iterationCounts(view);
 		return detail:: defaultPointCoordinates(base, index, max_grid_size, block_size, iterationsCount);
 	}
@@ -72,6 +80,9 @@ struct DefaultForEachPolicy {
 #endif  // __CUDACC__
 
 };
+
+template<typename TView>
+using DefaultForEachPolicy = DefaultForEachPolicyMixin<TView, DefaultForEachPolicyBase<TView>>;
 
 namespace detail {
 	template <typename TFunctor, typename TView, typename TPolicy>
