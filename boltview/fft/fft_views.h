@@ -80,12 +80,19 @@ public:
 	BOLT_HD_WARNING_DISABLE
 	BOLT_DECL_HYBRID
 	Element operator[](IndexType index) const {
-		if (index[0] >= 0) {
-			return halfspectrum_view_[index];
-		}
-		else {
-			return conjugate(halfspectrum_view_[-index]);
-		}
+		// If index[0] < 0, return the complex conjugate of the halfspectrum element
+		// on the centrally symmetrical position.
+		int is_negative = (index[0] < 0);
+		index = (1 - 2 * is_negative) * index;
+		Element value = halfspectrum_view_[index];
+		return value + is_negative * (conjugate(value) - value);
+		
+		// The implementation is slightly faster than the following equivalent:
+		// if (index[0] >= 0) {
+		// 	return halfspectrum_view_[index];
+		// } else {
+		// 	return conjugate(halfspectrum_view_[-index]);
+		// }
 	}
 
 protected:
@@ -154,10 +161,9 @@ struct ConstSpectrumBorderHandling {
 		if (const_spectrum.isIndexInside(coords - topCorner(const_spectrum))) {
 			return const_spectrum[coords];
 		}
-		auto region = validRegion(const_spectrum);
-		auto minimum = region.corner;
-
-		return 0 * const_spectrum[minimum];
+		
+		// Return zero - the default value.
+		return typename TView::Element{};
 	}
 };
 

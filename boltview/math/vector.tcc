@@ -30,12 +30,11 @@ sqrt(const TType value) -> decltype(std::sqrt(value))
 template<typename TType, int tDimension>
 BOLT_DECL_HYBRID
 bool operator==(const Vector<TType, tDimension> &v1, const Vector<TType, tDimension> &v2) {
-	for (int i =  0; i < tDimension; ++i) {
-		if (v1[i] != v2[i]) {
-			return false;
-		}
+	bool equal = true;	
+	for (int d = 0; d < tDimension; ++d) {
+		equal &= (v1[d] == v2[d]);
 	}
-	return true;
+	return equal;
 }
 
 template<typename TType>
@@ -59,12 +58,11 @@ bool operator!=(const Vector<TType, 1> &v1, TType value){
 template<typename TType, int tDimension>
 BOLT_DECL_HYBRID
 bool operator<(const Vector<TType, tDimension> &v1, const Vector<TType, tDimension> &v2) {
-	for (int i =  0; i < tDimension; ++i) {
-		if (v1[i] >= v2[i]) {
-			return false;
-		}
+	bool less = true;
+	for (int d = 0; d < tDimension; ++d) {
+		less &= (v1[d] < v2[d]);
 	}
-	return true;
+	return less;
 }
 
 template<typename TType1, typename TType2, int tDimension>
@@ -84,12 +82,11 @@ bool operator>(const Vector<TType, tDimension> &v1, const Vector<TType, tDimensi
 template<typename TType, int tDimension>
 BOLT_DECL_HYBRID
 bool operator<=(const Vector<TType, tDimension> &v1, const Vector<TType, tDimension> &v2) {
-	for (int i =  0; i < tDimension; ++i) {
-		if (v1[i] > v2[i]) {
-			return false;
-		}
+	bool less_or_equal = true;
+	for (int d = 0; d < tDimension; ++d) {
+		less_or_equal &= (v1[d] <= v2[d]);
 	}
-	return true;
+	return less_or_equal;
 }
 
 template<typename TType1, typename TType2, int tDimension>
