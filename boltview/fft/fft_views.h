@@ -36,12 +36,10 @@ public:
 	BOLT_HD_WARNING_DISABLE
 	BOLT_DECL_HYBRID
 	AccessType operator[](IndexType index) const {
-		for(int i = 1; i < TView::kDimension; i++){
-			// NOTE(fidli): if images are power of two - bit mask should be used
-			// popcount == 1 ? => (size-1) & index
-			// @Test whether this is faster than modulo, but there will be conditional jump, do we care with branch prediction if size is effectively const? also SIMT does not jump
-			index[i] = (get(view_.size(), i) + index[i]) % get(view_.size(), i);
+		for (int d = 0; d < kDimension; ++d) {
+			index[d] += (index[d] < 0) * get(view_.size(), d);
 		}
+
 		return view_[index];
 	}
 
@@ -80,12 +78,19 @@ public:
 	BOLT_HD_WARNING_DISABLE
 	BOLT_DECL_HYBRID
 	Element operator[](IndexType index) const {
-		if (index[0] >= 0) {
-			return halfspectrum_view_[index];
-		}
-		else {
-			return conjugate(halfspectrum_view_[-index]);
-		}
+		// If index[0] < 0, return the complex conjugate of the halfspectrum element
+		// on the centrally symmetrical position.
+		int is_negative = (index[0] < 0);
+		index = (1 - 2 * is_negative) * index;
+		Element value = halfspectrum_view_[index];
+		return value + is_negative * (conjugate(value) - value);
+		
+		// The implementation is slightly faster than the following equivalent:
+		// if (index[0] >= 0) {
+		// 	return halfspectrum_view_[index];
+		// } else {
+		// 	return conjugate(halfspectrum_view_[-index]);
+		// }
 	}
 
 protected:
@@ -147,17 +152,20 @@ struct ConstSpectrumBorderHandling {
 	static typename TView::Element access(
 		const ConstSpectrumView<TView>& const_spectrum,
 		const typename TView::IndexType& coordinates,
-		const Vector<typename TView::TIndex, TView::kDimension>& offset)
-	{
+		const Vector<typename TView::TIndex, TView::kDimension>& offset
+	) {
 		auto coords = coordinates + offset;
-		// Spectra allow negative indices
-		if (const_spectrum.isIndexInside(coords - topCorner(const_spectrum))) {
-			return const_spectrum[coords];
-		}
-		auto region = validRegion(const_spectrum);
-		auto minimum = region.corner;
 
-		return 0 * const_spectrum[minimum];
+		// Check that 'coords' are inside the const spectrum.
+		auto corner = topCorner(const_spectrum);
+		int inside = 1;
+		for (int d = 0; d < TView::kDimension; ++d) {
+			inside &= (coords[d] >= corner[d]);
+			inside &= (coords[d] <= -corner[d]);
+		}
+
+		// Does not work for the empty spectrum, but it should not be an issue.
+		return inside * const_spectrum[inside * coords];
 	}
 };
 
