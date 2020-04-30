@@ -36,12 +36,10 @@ public:
 	BOLT_HD_WARNING_DISABLE
 	BOLT_DECL_HYBRID
 	AccessType operator[](IndexType index) const {
-		for(int i = 1; i < TView::kDimension; i++){
-			// NOTE(fidli): if images are power of two - bit mask should be used
-			// popcount == 1 ? => (size-1) & index
-			// @Test whether this is faster than modulo, but there will be conditional jump, do we care with branch prediction if size is effectively const? also SIMT does not jump
-			index[i] = (get(view_.size(), i) + index[i]) % get(view_.size(), i);
+		for (int d = 0; d < kDimension; ++d) {
+			index[d] += (index[d] < 0) * get(view_.size(), d);
 		}
+
 		return view_[index];
 	}
 
@@ -154,16 +152,20 @@ struct ConstSpectrumBorderHandling {
 	static typename TView::Element access(
 		const ConstSpectrumView<TView>& const_spectrum,
 		const typename TView::IndexType& coordinates,
-		const Vector<typename TView::TIndex, TView::kDimension>& offset)
-	{
+		const Vector<typename TView::TIndex, TView::kDimension>& offset
+	) {
 		auto coords = coordinates + offset;
-		// Spectra allow negative indices
-		if (const_spectrum.isIndexInside(coords - topCorner(const_spectrum))) {
-			return const_spectrum[coords];
+
+		// Check that 'coords' are inside the const spectrum.
+		auto corner = topCorner(const_spectrum);
+		int inside = 1;
+		for (int d = 0; d < TView::kDimension; ++d) {
+			inside &= (coords[d] >= corner[d]);
+			inside &= (coords[d] <= -corner[d]);
 		}
-		
-		// Return zero - the default value.
-		return typename TView::Element{};
+
+		// Does not work for the empty spectrum, but it should not be an issue.
+		return inside * const_spectrum[inside * coords];
 	}
 };
 
