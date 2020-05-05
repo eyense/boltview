@@ -13,8 +13,8 @@ option(${PROJECT_NAME}_ENABLE_TESTS "Enable compilation of tests" ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # test if clang should be used as CUDA compiler
-include(clang)
-detect_clang_gpu()
+# include(clang)
+# detect_clang_gpu()
 
 include(test)
 
