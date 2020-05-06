@@ -239,6 +239,29 @@ int estimateTemporaryBuffer(TSize size, ExecutionPolicy execution_policy) {
 	}
 }
 
+// Overload for dimension reduce.
+template<typename TSize>
+TSize estimateCurrentLevelTemporary(
+	TSize size, int dimension, int block_size, int bucket_size
+) {
+	auto ans = size;
+	ans[dimension] = 1 + (size[dimension] -1) / (block_size * bucket_size);
+	return ans;
+}
+
+// Overload for dimension reduce.
+template<typename TSize>
+TSize estimateTemporaryBuffer(
+	TSize size, int dimension, int block_size, int bucket_size
+) {
+	auto current_level = estimateCurrentLevelTemporary(size, dimension, block_size, bucket_size);
+	if (current_level[dimension] == 1) {
+		return current_level;
+	} else {
+		return current_level + estimateTemporaryBuffer(current_level, dimension, block_size, bucket_size);
+	}
+}
+
 
 
 template<bool tRunOnDevice>
@@ -284,8 +307,14 @@ struct ReduceImplementation {
 		}
 	}*/
 
-	template<typename TView, typename TOutputView, typename TOutputValue, int tDimension, typename TOperator>
-	static void run(TView inview, TOutputView output_view, DimensionValue<tDimension> dimension, TOutputValue initial_value, TOperator reduction_operator, ExecutionPolicy execution_policy) {
+	template<
+		typename TView, typename TmpView, typename TOutputView,
+		typename TOutputValue, int tDimension, typename TOperator>
+	static void run(
+		TView inview, TmpView tmp_view, TOutputView output_view,
+		DimensionValue<tDimension> dimension, TOutputValue initial_value,
+		TOperator reduction_operator, ExecutionPolicy execution_policy
+	) {
 		auto size = inview.size();
 		auto reduced_size = removeDimension(size, tDimension);
 
@@ -296,27 +325,33 @@ struct ReduceImplementation {
 		// constexpr int kBlockSize = 256;
 		constexpr int kBlockSize = 128;
 		constexpr int kBucketSize = 2;
-		int block_count = 1 + (size[tDimension] - 1) / (kBlockSize * kBucketSize);
 		// TODO - better setup of bucket size and block size depending on input size
+
+		// Take the space needed for the current iteration from the temporary buffer.
+		auto tmp_size = detail::estimateTemporaryBuffer(size, tDimension, kBlockSize, kBucketSize);
+		auto current_size = detail::estimateCurrentLevelTemporary(size, tDimension, kBlockSize, kBucketSize);
+		auto following_layers_offset = tmp_size - current_size;
+		auto following_layers_size = tmp_size;
+		following_layers_size[tDimension] = following_layers_offset[tDimension];
+
+		auto current_tmp = subview(tmp_view, following_layers_offset, current_size);
+		auto following_tmp = subview(tmp_view, typename TmpView::IndexType(), following_layers_size);
+
+		int block_count = current_size[tDimension];
+
+		dim3 block(kBlockSize, 1, 1);
+		dim3 grid(block_count, reduced_size[0], reduced_size.kDimension >= 2 ? reduced_size[1] : 1);
+		
 		if (block_count > 1) {
-			dim3 block(kBlockSize, 1, 1);
-			dim3 grid(block_count, reduced_size[0], reduced_size.kDimension >= 2 ? reduced_size[1] : 1);
-
-			auto tmp_size = size;
-			tmp_size[tDimension] = block_count;
-			DeviceImage<TOutputValue, TView::kDimension> tmp_buffer(tmp_size);
-			dimensionReduceKernel<TView, decltype(tmp_buffer.view()), TOutputValue, TOperator, tDimension, kBlockSize><<<grid, block, 0, execution_policy.cuda_stream>>>(inview, tmp_buffer.view(), initial_value, reduction_operator);
+			dimensionReduceKernel<TView, decltype(current_tmp), TOutputValue, TOperator, tDimension, kBlockSize><<<grid, block, 0, execution_policy.cuda_stream>>>(inview, current_tmp, initial_value, reduction_operator);
 			BOLT_CHECK_ERROR_AFTER_KERNEL("dimensionReduceKernel tmp buffer", grid, block);
-			run(tmp_buffer.constView(), output_view, dimension, initial_value, reduction_operator, execution_policy);
+			run(current_tmp, following_tmp, output_view, dimension, initial_value, reduction_operator, execution_policy);
 		} else {
-			dim3 block(kBlockSize, 1, 1);
-			dim3 grid(1 + (size[tDimension] - 1) / block.x, reduced_size[0], reduced_size.kDimension >= 2 ? reduced_size[1] : 1);
-
 			dimensionReduceKernel<TView, TOutputView, TOutputValue, TOperator, tDimension, kBlockSize><<<grid, block, 0, execution_policy.cuda_stream>>>(inview, output_view, initial_value, reduction_operator);
 			BOLT_CHECK_ERROR_AFTER_KERNEL("dimensionReduceKernel", grid, block);
-			BOLT_CHECK(cudaStreamSynchronize(execution_policy.cuda_stream));
 		}
 	}
+
 #endif // __CUDACC__
 };
 
@@ -405,6 +440,92 @@ public:
 };
 #endif // __CUDACC__
 
+template<typename TOutputValue, int tInputDimension, int tReduceDimension, bool tRunOnDevice>
+class DimensionReduce {
+	static_assert(tReduceDimension < tInputDimension, "tReduceDimension must be less than tInputDimension");
+public:
+	using SizeType = Vector<int, tInputDimension>;
+
+	DimensionReduce(SizeType size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
+		execution_policy_(execution_policy)
+	{}
+
+	template<typename TInView, typename TOutView, typename TOperator>
+	void runAsync(
+		TInView input, TOutView output,
+		TOutputValue initial_value, TOperator reduction_operator
+	) {
+		static_assert(TInView::kDimension == tInputDimension, "Invalid input dimension.");
+		static_assert(TOutView::kDimension == tInputDimension - 1, "Invalid output dimension.");
+
+		detail::ReduceImplementation<false>::run(
+			input, output, DimensionValue<tReduceDimension>(),
+			initial_value, reduction_operator, execution_policy_);
+	}
+
+	template<typename TInView, typename TOutView, typename TOperator>
+	void run(
+		TInView input, TOutView output,
+		TOutputValue initial_value, TOperator reduction_operator
+	) {
+		runAsync(input, output, initial_value, reduction_operator);
+	}
+
+	ExecutionPolicy execution_policy_;
+
+};
+
+#ifdef __CUDACC__
+
+template<typename TOutputValue, int tInputDimension, int tReduceDimension>
+class DimensionReduce<TOutputValue, tInputDimension, tReduceDimension, true> {
+	static_assert(tReduceDimension < tInputDimension, "tReduceDimension must be less than tInputDimension");
+public:
+	using SizeType = Vector<int, tInputDimension>;
+	constexpr static int kBlockSize = 128;
+	constexpr static int kBucketSize = 2;
+
+	DimensionReduce(SizeType size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
+		execution_policy_(execution_policy),
+		size_(size),
+		tmp_image_(detail::estimateTemporaryBuffer(size, tReduceDimension, kBlockSize, kBucketSize))
+	{}
+
+	template<typename TInView, typename TOutView, typename TOperator>
+	void runAsync(
+		TInView input, TOutView output,
+		TOutputValue initial_value, TOperator reduction_operator
+	) {
+		static_assert(TInView::kDimension == tInputDimension, "Invalid input dimension.");
+		static_assert(TOutView::kDimension == tInputDimension - 1, "Invalid output dimension.");
+
+		// Check that the input view is not larger than stated in the constructor.
+		if (input.size() > size_) {
+			BOLT_THROW(IncompatibleViewSizes() << getViewPairSizesErrorInfo(input.size(), size_));
+		}
+
+		detail::ReduceImplementation<true>::run(
+			input, view(tmp_image_), output, DimensionValue<tReduceDimension>(),
+			initial_value, reduction_operator, execution_policy_);
+	}
+
+	template<typename TInView, typename TOutView, typename TOperator>
+	void run(
+		TInView input, TOutView output,
+		TOutputValue initial_value, TOperator reduction_operator
+	) {
+		runAsync(input, output, initial_value, reduction_operator);
+		BOLT_CHECK(cudaStreamSynchronize(execution_policy_.cuda_stream));
+	}
+
+	ExecutionPolicy execution_policy_;
+	SizeType size_;
+	DeviceImage<TOutputValue, tInputDimension> tmp_image_;
+};
+#endif // __CUDACC__
+
+
+
 
 template<typename TView, typename TOutputValue, typename TOperator>
 TOutputValue reduce(TView inview, TOutputValue initial_value, TOperator reduction_operator, ExecutionPolicy execution_policy) {
@@ -418,7 +539,10 @@ TOutputValue reduce(TView inview, TOutputValue initial_value, TOperator reductio
 
 template<typename TView, typename TOutputView, typename TOutputValue, int tDimension, typename TOperator>
 void dimensionReduce(TView inview, TOutputView output_view, DimensionValue<tDimension> dimension, TOutputValue initial_value, TOperator reduction_operator, ExecutionPolicy execution_policy) {
-	detail::ReduceImplementation<IsDeviceImageView<TView>::value>::run(inview, output_view, dimension, initial_value, reduction_operator, execution_policy);
+	auto plan = 
+		DimensionReduce<TOutputValue, TView::kDimension, tDimension, IsDeviceImageView<TView>::value>(
+			inview.size(), execution_policy);
+	plan.run(inview, output_view, initial_value, reduction_operator);
 }
 
 template<typename TView, typename TOutputValue, class>

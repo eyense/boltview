@@ -40,4 +40,35 @@ BOLT_AUTO_TEST_CASE(ConstantViewReduce) {
 	BOOST_CHECK_EQUAL(val2, product(cview_3d.size()));
 }
 
+BOLT_AUTO_TEST_CASE(ConstantViewDimensionReduce) {
+
+	auto cview_2d = makeConstantImageView(1, Int2(800, 800));
+	auto cview_3d = makeConstantImageView(1, Int3(800, 800, 200));
+
+	DeviceImage<int, 1> results_2d (800);
+	DeviceImage<int, 2> results_3d (800, 200);
+
+	HostImage<int, 1> host_results_2d (800);
+	HostImage<int, 2> host_results_3d (800, 200);
+
+	dimensionReduce(cview_2d, view(results_2d), DimensionValue<0>(), 0, thrust::plus<int>());
+	dimensionReduce(cview_3d, view(results_3d), DimensionValue<1>(), 0, thrust::plus<int>());
+
+	copy(constView(results_2d), view(host_results_2d));
+	copy(constView(results_3d), view(host_results_3d));
+
+	auto host_view_2d = constView(host_results_2d);
+	auto host_view_3d = constView(host_results_3d);
+
+	for (int x = 0; x < 800; ++x) {
+		BOOST_CHECK_EQUAL(host_view_2d[x], 800);
+	}
+
+	for (int y = 0; y < 200; ++y) {
+		for (int x = 0; x < 800; ++x) {
+			BOOST_CHECK_EQUAL((host_view_3d[{x, y}]), 800);
+		}
+	}
+}
+
 }  // namespace bolt
