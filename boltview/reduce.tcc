@@ -327,6 +327,7 @@ struct ReduceImplementation {
 		constexpr int kBucketSize = 2;
 		// TODO - better setup of bucket size and block size depending on input size
 
+		// Take the space needed for the current iteration from the temporary buffer.
 		auto tmp_size = detail::estimateTemporaryBuffer(size, tDimension, kBlockSize, kBucketSize);
 		auto current_size = detail::estimateCurrentLevelTemporary(size, tDimension, kBlockSize, kBucketSize);
 		auto following_layers_offset = tmp_size - current_size;
@@ -443,9 +444,9 @@ template<typename TOutputValue, int tInputDimension, int tReduceDimension, bool 
 class DimensionReduce {
 	static_assert(tReduceDimension < tInputDimension, "tReduceDimension must be less than tInputDimension");
 public:
+	using SizeType = Vector<int, tInputDimension>;
 
-	template<typename TSize>
-	DimensionReduce(TSize size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
+	DimensionReduce(SizeType size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
 		execution_policy_(execution_policy)
 	{}
 
@@ -480,12 +481,13 @@ template<typename TOutputValue, int tInputDimension, int tReduceDimension>
 class DimensionReduce<TOutputValue, tInputDimension, tReduceDimension, true> {
 	static_assert(tReduceDimension < tInputDimension, "tReduceDimension must be less than tInputDimension");
 public:
+	using SizeType = Vector<int, tInputDimension>;
 	constexpr static int kBlockSize = 128;
 	constexpr static int kBucketSize = 2;
 
-	template<typename TSize>
-	DimensionReduce(TSize size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
+	DimensionReduce(SizeType size, ExecutionPolicy execution_policy = ExecutionPolicy{}) :
 		execution_policy_(execution_policy),
+		size_(size),
 		tmp_image_(detail::estimateTemporaryBuffer(size, tReduceDimension, kBlockSize, kBucketSize))
 	{}
 
@@ -496,6 +498,11 @@ public:
 	) {
 		static_assert(TInView::kDimension == tInputDimension, "Invalid input dimension.");
 		static_assert(TOutView::kDimension == tInputDimension - 1, "Invalid output dimension.");
+
+		// Check that the input view is not larger than stated in the constructor.
+		if (input.size() > size_) {
+			BOLT_THROW(IncompatibleViewSizes() << getViewPairSizesErrorInfo(input.size(), size_));
+		}
 
 		detail::ReduceImplementation<true>::run(
 			input, view(tmp_image_), output, DimensionValue<tReduceDimension>(),
@@ -512,6 +519,7 @@ public:
 	}
 
 	ExecutionPolicy execution_policy_;
+	SizeType size_;
 	DeviceImage<TOutputValue, tInputDimension> tmp_image_;
 };
 #endif // __CUDACC__
