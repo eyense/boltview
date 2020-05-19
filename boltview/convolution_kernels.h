@@ -21,7 +21,7 @@ public:
 
 	BOLT_DECL_HYBRID
 	ConstKernel(TType val, Vector<int, tDimension> size, Vector<int, tDimension> center):
-		size_(size), center_(center)
+		value_(val), size_(size), center_(center)
 	{}
 
 	BOLT_DECL_HYBRID

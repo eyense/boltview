@@ -19,9 +19,9 @@ BOLT_DECL_HYBRID
 TValue sumEachNeighbor(Int2 from, Int2 to, TValue init_value, TCallable callable)
 {
 	TValue sum = init_value;
-	int i = from[0];
 	int j = from[1];
 	for(; j < to[1]; ++j) {
+		int i = from[0];
 		for(; i < to[0] - 3; i+=4) {
 			sum += callable({i,j});
 			sum += callable({i+1,j});
@@ -47,11 +47,11 @@ TValue sumEachNeighbor(Int3 from, Int3 to, TValue init_value, TCallable callable
 {
 	TValue sum = init_value;
 	Int3 index;
-	int i = from[0];
-	int j = from[1];
 	int k = from[2];
 	for(; k < to[2]; ++k) {
+		int j = from[1];
 		for(; j < to[1]; ++j) {
+			int i = from[0];
 			for(; i < to[0] - 3; i+=4) {
 				sum += callable({i, j, k});
 				sum += callable({i+1, j, k});
