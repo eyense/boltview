@@ -222,6 +222,15 @@ BOLT_AUTO_TEST_CASE(ForeachPositionOverBigView) {
 	BOOST_CHECK_EQUAL(sumSquareDifferences(device_image.view(), target_view, 0), 0);
 }
 
+BOLT_AUTO_TEST_CASE(DimReduceOverStackOfSmallImages) {
+	DeviceImage<int, 3> device_image(32, 32, 1 << 20);
+	DeviceImage<int, 2> target_image(32, 32);
+
+	auto source_view = makeConstantImageView(1, device_image.size());
+	copy(source_view, device_image.view());
+	dimensionReduce(device_image.view(), target_image.view(), DimensionValue<2>{}, 0, thrust::plus<int>());
+	BOOST_CHECK_EQUAL(sumSquareDifferences(makeConstantImageView(1 << 20, target_image.size()), target_image.view(), 0), 0);
+}
 
 BOLT_AUTO_TEST_CASE(HostForEachPosition) {
 	HostImage<int, 2> host_image(16, 16);
