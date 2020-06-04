@@ -18,9 +18,9 @@ struct DefaultForEachPolicyBase {
 
 	static BOLT_DECL_HYBRID dim3 gridSize(const TView &view)
 	{
-        	return detail::defaultGridSizeForBlockDim(dataSize(view), blockSize());
+		return detail::defaultGridSizeForBlockDim<TView::kDimension>(dataSize(view), blockSize());
 	}
-#endif  // __CUDACC__
+#endif	// __CUDACC__
 
 };
 

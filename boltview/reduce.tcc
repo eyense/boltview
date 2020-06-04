@@ -390,6 +390,7 @@ struct ReduceImplementation {
 		else if (size[tDimension] < 16) {
 			// Use a different implementation if the reduced dimension is small.
 			// The dimensionReduceKernel is inefficient in such cases.
+			// TODO(martin): Find optimal constant. (16 is just a guess.)
 			bolt::forEachPosition(
 				output_view,
 				FlatDimensionReduceFunctor<TView, TOutputView, tDimension, TOperator>(
