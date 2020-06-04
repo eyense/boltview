@@ -23,6 +23,8 @@ public:
 	using CoordinateType = Vector<float, tDimension>;
 	using Element = TElement;
 	static const int kDimension = tDimension;
+	using ViewType = TextureImageView<TElement, tDimension, TCudaType>;
+	using ConstViewType = TextureImageConstView<const TElement, tDimension, TCudaType>;
 
 	TextureImage() :
 		cuda_array_(nullptr)
@@ -105,13 +107,13 @@ public:
 	}
 
 	/// Create view for whole image, which can be used for modification of image data.
-	TextureImageView<TElement, tDimension, TCudaType> view() {
-		return TextureImageView<TElement, tDimension, TCudaType>(cuda_array_, texture_object_, size_, strides_);
+	ViewType view() {
+		return ViewType(cuda_array_, texture_object_, size_, strides_);
 	}
 
 	/// Create view for whole image, which can be used for const access to the image data.
-	TextureImageConstView<const TElement, tDimension, TCudaType> constView() const {
-		return TextureImageConstView<const TElement, tDimension, TCudaType>(cuda_array_, texture_object_, size_, strides_);
+	ConstViewType constView() const {
+		return ConstViewType(cuda_array_, texture_object_, size_, strides_);
 	}
 
 protected:
