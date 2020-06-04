@@ -11,6 +11,7 @@
 
 #include <boltview/array_view.h>
 #include <boltview/create_view.h>
+#include <boltview/for_each.h>
 #include <boltview/subview.h>
 
 #if defined(__CUDACC__)
@@ -307,6 +308,45 @@ struct ReduceImplementation {
 		}
 	}*/
 
+	template<typename TView, typename TOutView, int tDimension, typename TOperator>
+	struct FlatDimensionReduceFunctor {
+		using Element = typename TOutView::Element;
+		using TIndex = typename TView::TIndex;
+
+		FlatDimensionReduceFunctor(
+			TView view,
+			Element initial_value,
+			TOperator reduction_operator
+		) :	view_(view),
+			reduced_dim_len_(view_.size()[tDimension]),
+			initial_value_(initial_value),
+			reduction_operator_(reduction_operator)
+		{}
+
+		BOLT_DECL_HYBRID
+		void operator()(
+			typename TOutView::AccessType value,
+			typename TOutView::IndexType index
+		) const {
+			auto input_index = bolt::insertDimension(bolt::Vector<TIndex, TOutView::kDimension>(index), 0, tDimension);
+			Element ans = initial_value_;
+
+			// Serially iterate through the input view.
+			for (TIndex i = 0; i < reduced_dim_len_; ++i) {
+				input_index[tDimension] = i;
+				ans = reduction_operator_(ans, view_[input_index]);
+			}
+
+			// Save the value in the output view.
+			value = ans;
+		}
+
+		TView view_;
+		TIndex reduced_dim_len_;
+		Element initial_value_;
+		TOperator reduction_operator_;
+	};
+
 	template<
 		typename TView, typename TmpView, typename TOutputView,
 		typename TOutputValue, int tDimension, typename TOperator>
@@ -346,7 +386,17 @@ struct ReduceImplementation {
 			dimensionReduceKernel<TView, decltype(current_tmp), TOutputValue, TOperator, tDimension, kBlockSize><<<grid, block, 0, execution_policy.cuda_stream>>>(inview, current_tmp, initial_value, reduction_operator);
 			BOLT_CHECK_ERROR_AFTER_KERNEL("dimensionReduceKernel tmp buffer", grid, block);
 			run(current_tmp, following_tmp, output_view, dimension, initial_value, reduction_operator, execution_policy);
-		} else {
+		}
+		else if (size[tDimension] < 16) {
+			// Use a different implementation if the reduced dimension is small.
+			// The dimensionReduceKernel is inefficient in such cases.
+			bolt::forEachPosition(
+				output_view,
+				FlatDimensionReduceFunctor<TView, TOutputView, tDimension, TOperator>(
+					inview, initial_value, reduction_operator),
+				execution_policy.cuda_stream);
+		}
+		else {
 			dimensionReduceKernel<TView, TOutputView, TOutputValue, TOperator, tDimension, kBlockSize><<<grid, block, 0, execution_policy.cuda_stream>>>(inview, output_view, initial_value, reduction_operator);
 			BOLT_CHECK_ERROR_AFTER_KERNEL("dimensionReduceKernel", grid, block);
 		}
