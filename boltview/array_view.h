@@ -148,12 +148,7 @@ public:
 	DeviceArrayView &operator=(const DeviceArrayView &) = default;
 
 	BOLT_DECL_DEVICE
-	Element operator[](IndexType index) const {
-		return this->pointer_[index];
-	}
-
-	BOLT_DECL_DEVICE
-	AccessType operator[](IndexType index) {
+	AccessType operator[](IndexType index) const {
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
 		return const_cast<Element *>(this->pointer_)[index];
 	}
@@ -396,13 +391,9 @@ public:
 	HostArrayView &operator=(HostArrayView &&) = default;
 
 
-	AccessType operator[](IndexType index) {
+	AccessType operator[](IndexType index) const {
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
 		return const_cast<Element *>(this->pointer_)[index];
-	}
-
-	Element operator[](IndexType index) const {
-		return this->pointer_[index];
 	}
 
 	Element *pointer() {
