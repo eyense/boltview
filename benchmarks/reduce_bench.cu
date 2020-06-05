@@ -33,7 +33,7 @@ struct TestFunctor {
 
 int main() {
 	const Int3 kImageSize(600, 600, 300);
-	const int kIterationCount = 20;
+	const int kIterationCount = 200;
 
 	BenchmarkManager bm;
 
@@ -52,7 +52,8 @@ int main() {
 				auto red = Reduce<float, true>(cb.size(), policy);
 				for (int i = 0; i < kIterationCount; ++i) {
 					// auto v = sum(in_view, 3.3f, policy);
-					auto v = red.runAsync(in_view, 3.3f, thrust::plus<float>());
+					float v;
+					red.runAsync(in_view, v, 3.3f, thrust::plus<float>());
 				}
 				cudaDeviceSynchronize();
 			}
@@ -84,6 +85,26 @@ int main() {
 
 
 	// bm.add("Switched strides", switched_strides);
+
+	bm.add("Dimension reduce", [=](Timer & timer){
+		DeviceImage<float, 3> test_image(kImageSize);
+		DeviceImage<float, 2> reduce_image(removeDimension(kImageSize, 0));
+		auto in_view = view(test_image);
+		auto out_view = view(reduce_image);
+
+		auto cb = checkerboard(10, 2, Int3(8, 8, 8), kImageSize);
+		copy(cb, in_view);
+
+		{
+			auto interval = timer.start("reduce");
+			ExecutionPolicy policy;
+			auto red = DimensionReduce<float, 3, 0, true>(cb.size(), policy);
+			for (int i = 0; i < kIterationCount; ++i) {
+				red.runAsync(in_view, out_view, 0.0f, thrust::plus<float>());
+			}
+			cudaDeviceSynchronize();
+		}
+	});
 
 	bm.runAll();
 	bm.printAll();

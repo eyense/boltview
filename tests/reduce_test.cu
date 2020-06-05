@@ -40,6 +40,30 @@ BOLT_AUTO_TEST_CASE(ConstantViewReduce) {
 	BOOST_CHECK_EQUAL(val2, product(cview_3d.size()));
 }
 
+struct PlusInt2 {
+	BOLT_DECL_HYBRID
+	Int2 operator()(const Int2& x, const Int2& y) const {
+		return x + y;
+	}
+};
+
+BOLT_AUTO_TEST_CASE(ConstantViewReduceComplexType) {
+
+	auto cview_2d = makeConstantImageView(Int2(1, -2), Int2(800, 800));
+	auto cview_3d = makeConstantImageView(Int2(1, -2), Int3(800, 800, 200));
+
+
+	auto val1 = reduce(cview_2d, Int2(0, 0), PlusInt2());
+	auto val2 = reduce(cview_3d, Int2(0, 0), PlusInt2());
+
+
+	BOOST_CHECK_EQUAL(val1[0], product(cview_2d.size()));
+	BOOST_CHECK_EQUAL(val1[1], -2 * product(cview_2d.size()));
+	BOOST_CHECK_EQUAL(val2[0], product(cview_3d.size()));
+	BOOST_CHECK_EQUAL(val2[1], -2 * product(cview_3d.size()));
+}
+
+
 BOLT_AUTO_TEST_CASE(ConstantViewDimensionReduce) {
 
 	auto cview_2d = makeConstantImageView(1, Int2(800, 800));

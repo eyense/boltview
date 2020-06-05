@@ -6,6 +6,7 @@
 #include <limits>
 #include <cmath>
 #include <cfloat>
+#include <type_traits>
 
 #include <thrust/functional.h>
 
@@ -96,6 +97,42 @@ struct IndexTraits<3, 3, tDirection, tBlockSize> {
 };
 
 
+/// Faster implementation of the last warp unroll. Works only for fundamental types.
+/// It is necessary to take a snapshot of a volatile variable.
+/// (https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf)
+template<
+	typename TValue, typename TOperator,
+	typename std::enable_if<std::is_fundamental<TValue>::value, int>::type = 0>
+BOLT_DECL_DEVICE
+void warpReduce(
+	volatile TValue* sdata, int tid, TOperator reduction_operator
+) {
+	if (tid < 32) {
+		#pragma unroll
+		for (int i = 32; i > 0; i >>= 1) {
+			sdata[tid] = reduction_operator(TValue(sdata[tid]), TValue(sdata[tid + i]));
+		}
+	}
+}
+
+/// The original implementation of the last warp unroll.
+template<
+	typename TValue, typename TOperator,
+	typename std::enable_if<!std::is_fundamental<TValue>::value, int>::type = 0>
+BOLT_DECL_DEVICE
+void warpReduce(
+	TValue* sdata, int tid, TOperator reduction_operator
+) {
+	#pragma unroll
+	for (int i = 32; i > 0; i >>= 1) {
+		if (tid < i) {
+			sdata[tid] = reduction_operator(sdata[tid], sdata[tid + i]);
+		}
+		__syncthreads();
+	}
+}
+
+
 /// Based on <a href="https://docs.nvidia.com/cuda/samples/6_Advanced/reduction/doc/reduction.pdf">Optimizing Parallel Reduction in CUDA by Mark Harris</a>
 template <typename TView, typename TOutputView, typename TOutputValue, typename TOperator, int tDimension, int tBlockSize>
 BOLT_GLOBAL void dimensionReduceKernel(
@@ -151,17 +188,12 @@ BOLT_GLOBAL void dimensionReduceKernel(
 		}
 	}
 	__syncthreads();
-	for (int i = 32; i > 0; i >>= 1) {
-		if (tid < i) {
-			sdata[tid] = reduction_operator(sdata[tid], sdata[tid + i]);
-		}
-		__syncthreads();
-	}
+
+	warpReduce(sdata, tid, reduction_operator);
+
 	if (tid == 0) {
 		output_view[output_index] = sdata[0];
 	}
-
-
 }
 
 template <typename TView, typename TOperator, typename TOutputValue, typename TOutputView, int tBlockSize>
@@ -210,12 +242,9 @@ BOLT_GLOBAL void reduceKernel(
 		}
 	}
 	__syncthreads();
-	for (int i = 32; i > 0; i >>= 1) {
-		if (tid < i) {
-			sdata[tid] = reduction_operator(sdata[tid], sdata[tid + i]);
-		}
-		__syncthreads();
-	}
+
+	warpReduce(sdata, tid, reduction_operator);
+
 	if (tid == 0) {
 		output[blockIdx.x] = sdata[0];
 	}
