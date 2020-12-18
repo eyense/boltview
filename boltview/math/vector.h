@@ -153,7 +153,7 @@ public:
 	BOLT_DECL_HYBRID
 	Vector() {
 		for (int i = 0; i < tDimension; ++i) {
-			data[i] = 0;
+			data[i] = Element{};
 		}
 	}
 
