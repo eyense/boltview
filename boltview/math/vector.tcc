@@ -383,7 +383,7 @@ auto product(const Vector<TElement1, tDimension> &v1, const Vector<TElement2, tD
 template<typename TVector>
 BOLT_DECL_HYBRID
 typename TVector::Element product(const TVector &v) {
-	typename TVector::Element result = 1;
+	typename TVector::Element result{1};
 	for (int i = 0; i < TVector::kDimension; ++i) {
 		result *= v[i];
 	}
@@ -393,7 +393,7 @@ typename TVector::Element product(const TVector &v) {
 template<typename TVector, class, class>
 BOLT_DECL_HYBRID
 typename TVector::Element sum(const TVector &v) {
-	typename TVector::Element result = 0;
+	typename TVector::Element result{0};
 	for (int i = 0; i < TVector::kDimension; ++i) {
 		result += v[i];
 	}
