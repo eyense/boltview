@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 
 project(BoltView_tests CXX CUDA)
 
-
-option(BoltView_ENABLE_AUTOMATED_TESTS "Enable running automated tests using 'make test'" ON)
-if (BoltView_ENABLE_AUTOMATED_TESTS)
-	enable_testing()
-endif()
-
-
 include(test)
 
 # Tests

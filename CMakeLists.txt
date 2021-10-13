@@ -8,6 +8,7 @@ option(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS "Enable features that use thre
 option(${PROJECT_NAME}_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
 option(${PROJECT_NAME}_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
 option(${PROJECT_NAME}_ENABLE_TESTS "Enable compilation of tests" ON)
+option(${PROJECT_NAME}_ENABLE_AUTOMATED_TESTS "Enable running automated tests using 'make test'" ON)
 
 # Custom CMake commands
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -140,8 +141,8 @@ target_compile_options(bolt INTERFACE
 				"$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>"
 				)
 target_compile_definitions(bolt INTERFACE
-				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS\}>:BOLT_USE_THREAD_BUILDING_BLOCKS>"
-				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_UNIFIED_MEMORY\}>:BOLT_USE_UNIFIED_MEMORY>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:BOLT_USE_THREAD_BUILDING_BLOCKS>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_UNIFIED_MEMORY}>:BOLT_USE_UNIFIED_MEMORY>"
 				)
 
 
@@ -159,6 +160,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 if(${PROJECT_NAME}_ENABLE_TESTS)
+	if (${PROJECT_NAME}_ENABLE_AUTOMATED_TESTS)
+		enable_testing()
+	endif()
 	add_subdirectory(tests)
 endif()
 # add_subdirectory(examples)
