@@ -131,7 +131,7 @@ target_compile_features(bolt INTERFACE cxx_std_14)
 target_sources(bolt INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_HEADERS}>)
 target_link_libraries(bolt INTERFACE 
 				Boost::filesystem 
-				"$<$<BOOL:\$\{${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS\}>:tbb>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb>"
 				)
 target_include_directories(bolt INTERFACE 
 				"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
