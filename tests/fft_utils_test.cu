@@ -786,7 +786,7 @@ BOOST_AUTO_TEST_CASE(CrossPowerSpectrums){
 
 template <int tDim>
 void phaseCorrelationTestWithQuads(Vector<int, tDim> size){
-	Vector<int, 2> shift;
+	Vector<int, tDim> shift;
 	for(int i = 0; i < tDim; i++){
 		set(shift, i, get(size, i)/2);
 	}
