@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
 
 #include <boltview/cuda_utils.h>
 #include <boltview/exceptions.h>
