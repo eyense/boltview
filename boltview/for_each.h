@@ -150,7 +150,7 @@ namespace detail {
 		BOLT_HD_WARNING_DISABLE
 		BOLT_DECL_HYBRID void operator() (const detail::ViewIndexingLocator<TView> & point, const Vector<int, TView::kDimension> & coord) const
 		{
-			static_assert(std::is_void<decltype(functor_(point.get(), coord ) )>::value, "Return value of the functor is ignored in ForEach loop");
+			static_assert(std::is_void<decltype(functor_(point.get(), coord ) )>::value, "Return value of the functor is ignored in ForEachPosition loop");
 			functor_(point.get(), coord);
 		}
 	};

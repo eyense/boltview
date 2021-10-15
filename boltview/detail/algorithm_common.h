@@ -68,10 +68,13 @@ struct ViewIndexingLocator
 	TView view_;
 	typename TView::IndexType location_;
 public:
-	BOLT_HD_WARNING_DISABLE
+	// Upgrade to CUDA 11.4 broke this and the constructor was not called from the create() method.
+	// It is no longer needed as we can leave it up to default construction from initializer list.
+	/* BOLT_HD_WARNING_DISABLE BOLT_DECL_HYBRID
 	ViewIndexingLocator(const TView & view, const typename TView::IndexType & location):
 		view_(view),
-		location_(location){};
+		location_(location){};*/
+
 	using AccessType = decltype(view_[typename TView::IndexType{}]);
 
 	BOLT_HD_WARNING_DISABLE
