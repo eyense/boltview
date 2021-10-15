@@ -220,7 +220,7 @@ LoadStorageHelper<TImage> loadImpl(typename TImage::SizeType size, std::string p
 }  // namespace detail
 
 template<typename TImage>
-void dumpElementsOneByOne(std::ofstream & out, DumpStorageHelper<TImage> & tmp) {
+void dumpElementsOneByOne(std::ofstream & out, detail::DumpStorageHelper<TImage> & tmp) {
 	int64_t num_elements = tmp.safeElementCount();
 	for (int64_t i = 0; i < num_elements; ++i) {
 		auto element = linearAccess(tmp.view(), i);
@@ -229,8 +229,8 @@ void dumpElementsOneByOne(std::ofstream & out, DumpStorageHelper<TImage> & tmp) 
 }
 
 template<typename TImage>
-void dumpElementsAtOnce(std::ofstream & out, DumpStorageHelper<TImage> & tmp) {
-    out.write(reinterpret_cast<const char *>(tmp.view().pointer()), sizeof(typename DumpStorageHelper<TImage>::HostImageType::Element) * tmp.safeElementCount());
+void dumpElementsAtOnce(std::ofstream & out, detail::DumpStorageHelper<TImage> & tmp) {
+    out.write(reinterpret_cast<const char *>(tmp.view().pointer()), sizeof(typename detail::DumpStorageHelper<TImage>::HostImageType::Element) * tmp.safeElementCount());
 }
 
 template<typename TView>
