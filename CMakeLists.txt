@@ -166,6 +166,7 @@ if(${PROJECT_NAME}_ENABLE_TESTS)
 	add_subdirectory(tests)
 endif()
 # add_subdirectory(examples)
+set(CPACK_PACKAGE_NAME "boltview")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
@@ -206,8 +207,19 @@ install(DIRECTORY boltview
 #     DESTINATION
 #         ${PROJECT_CMAKE_CONFIG_DESTINATION})
 
-set(CPACK_GENERATOR TGZ;STGZ;DEB)
+set(CPACK_GENERATOR TGZ;STGZ;DEB;RPM)
 # set(CPACK_SOURCE_GENERATOR TGZ)
+# NOTE(fidli): obviously we need cuda, but the package includes version name
+# cannot use dll, because you may want not to run, but build
+# cannot use static lib, because you may link statically
+# I dont know cpack well enough, so omitting cuda libraries
+set(CPACK_RPM_PACKAGE_REQUIRES "boost-system >= 1.53, boost-filesystem >= 1.53")
+if(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS)
+    string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",tbb-devel")
+endif()
+if(${PROJECT_NAME}_ENABLE_FFT)
+    string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",fftw-devel")
+endif()
 
 set(CPACK_PACKAGE_CONTACT "jan.kolomaznik@eyen.se")
 set(CPACK_PACKAGE_VENDOR "Eyen SE")
