@@ -184,6 +184,20 @@ public:
 };
 
 template<typename TImage>
+void readElementsOneByOne(std::ifstream & in, LoadStorageHelper<TImage> & tmp) {
+	int64_t num_elements = tmp.safeElementCount();
+	for (int64_t i = 0; i < num_elements; ++i) {
+		auto &element = linearAccess(tmp.view(), i);
+		in.read(reinterpret_cast<char *>(&element), sizeof(element));
+	}
+}
+
+template<typename TImage>
+void readElementsAtOnce(std::ifstream & in, LoadStorageHelper<TImage> & tmp) {
+    in.read(reinterpret_cast<char *>(tmp.view().pointer()), sizeof(typename LoadStorageHelper<TImage>::HostImageType::Element) * tmp.safeElementCount());
+}
+
+template<typename TImage>
 LoadStorageHelper<TImage> loadImpl(typename TImage::SizeType size, std::string prefix) {
 	LoadStorageHelper<TImage> tmp(size);
 	std::string filename = getRawFilename<TImage>(size, prefix);
@@ -192,17 +206,32 @@ LoadStorageHelper<TImage> loadImpl(typename TImage::SizeType size, std::string p
 	std::ifstream in;
 	in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	in.open(filename, std::ifstream::in | std::ifstream::binary);
-
 	// TODO(tom): check file size before reading
-	int64_t num_elements = tmp.safeElementCount();
-	for (int64_t i = 0; i < num_elements; ++i) {
-		auto &element = linearAccess(tmp.view(), i);
-		in.read(reinterpret_cast<char *>(&element), sizeof(element));
-	}
+    // TODO(fidli): this can be taken further by continuous blocks according to strides
+    if(tmp.view().strides() == stridesFromSize(tmp.view().size())) {
+        readElementsAtOnce(in, tmp);
+    }
+    else {
+        readElementsOneByOne(in, tmp);
+    }
 	return tmp;
 }
 
 }  // namespace detail
+
+template<typename TImage>
+void dumpElementsOneByOne(std::ofstream & out, detail::DumpStorageHelper<TImage> & tmp) {
+	int64_t num_elements = tmp.safeElementCount();
+	for (int64_t i = 0; i < num_elements; ++i) {
+		auto element = linearAccess(tmp.view(), i);
+		out.write(reinterpret_cast<const char *>(&element), sizeof(element));
+	}
+}
+
+template<typename TImage>
+void dumpElementsAtOnce(std::ofstream & out, detail::DumpStorageHelper<TImage> & tmp) {
+    out.write(reinterpret_cast<const char *>(tmp.view().pointer()), sizeof(typename detail::DumpStorageHelper<TImage>::HostImageType::Element) * tmp.safeElementCount());
+}
 
 template<typename TView>
 std::string dump(TView view, std::string prefix) {
@@ -213,12 +242,13 @@ std::string dump(TView view, std::string prefix) {
 	std::ofstream out;
 	out.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 	out.open(filename, std::ofstream::out | std::ofstream::binary);
-
-	int64_t num_elements = tmp.safeElementCount();
-	for (int64_t i = 0; i < num_elements; ++i) {
-		auto element = linearAccess(tmp.view(), i);
-		out.write(reinterpret_cast<const char *>(&element), sizeof(element));
-	}
+    // TODO(fidli): this can be taken further by continuous blocks according to strides
+    if(tmp.view().strides() == stridesFromSize(tmp.view().size())) {
+        dumpElementsAtOnce(out, tmp);
+    }
+    else {
+        dumpElementsOneByOne(out, tmp);
+    }
 	return filename;
 }
 
