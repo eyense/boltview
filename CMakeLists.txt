@@ -168,7 +168,7 @@ endif()
 # add_subdirectory(examples)
 set(CPACK_PACKAGE_NAME "boltview")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 
 write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"

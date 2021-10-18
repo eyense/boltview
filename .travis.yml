@@ -52,5 +52,6 @@ deploy:
     - BoltView-*-Linux.deb
     - BoltView-*-Linux.sh
     - BoltView-*-Linux.tar.gz
+    - BoltView-*-Linux.rpm
   on:
     tags: true
