@@ -220,6 +220,8 @@ endif()
 if(${PROJECT_NAME}_ENABLE_FFT)
     string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",fftw-devel")
 endif()
+# NOTE(fidli): would need 3.6 + cmake to specify perms easily
+SET(CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/cmake/post_rpm_install.sh")
 
 set(CPACK_PACKAGE_CONTACT "jan.kolomaznik@eyen.se")
 set(CPACK_PACKAGE_VENDOR "Eyen SE")

@@ -1,14 +1,12 @@
-# Try to find Eyen's ECIP library
+# Try to find Eyen's BoltView library
 
 # Once done this will define
-#  ECIP_FOUND - system has found the ecip library with correct include directory
-#  ECIP_INCLUDE_DIR - the ecip include directory
-#  ECIP_LIBRARIES - ecip static library
+#  BOLT_FOUND - system has found the ecip library with correct include directory
+#  BOLT_INCLUDE_DIR - the ecip include directory
 
-# When searching for ECIP, this module respects the following variables (both CMake and environment)
-#  ECIP_ROOT - the library is searched for as ${ECIP_ROOT}/ecip/image.h
-#  EYEN_ROOT - If search in ECIP_ROOT is not successfull, EYEN_ROOT is tried out and ECIP is searched as ${EYEN_ROOT}/lib/ecip/ecip/image.h
-
+# When searching for BoltView, this module respects the following variables (both CMake and environment)
+#  BOLT_ROOT - the library is searched for as ${BOLT_ROOT}/boltview/device_image.h
+#  EYEN_ROOT - If search in BOLT_ROOT is not successfull, EYEN_ROOT is tried out and BoltView is searched as ${BOLT_ROOT}/boltview/device_image.h
 
 if (NOT BOLT_FOUND)
 	find_path(BOLT_INCLUDE_DIR NAMES boltview/device_image.h
@@ -20,12 +18,13 @@ if (NOT BOLT_FOUND)
 		../
 		../../
 		../../../
-		PATH_SUFFIXES boltview include/boltview
+		PATH_SUFFIXES include
 		)
 
 	include(FindPackageHandleStandardArgs)
 	find_package_handle_standard_args(BoltView DEFAULT_MSG BOLT_INCLUDE_DIR)
 
+    set(BOLT_FOUND TRUE)
 	mark_as_advanced(BOLT_INCLUDE_DIR)
 
 	add_library(bolt INTERFACE)
