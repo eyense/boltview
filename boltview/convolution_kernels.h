@@ -99,7 +99,7 @@ private:
 	Vector<int, tDimension> center_;
 };
 
-/*template<typename TValue, int tDimension>
+template<typename TValue, int tDimension>
 struct DeviceViewKernel : public DynamicKernelBase<TValue, tDimension>{
 	static const bool kIsHostKernel = false;
 	static const bool kIsDeviceKernel = true;
@@ -107,12 +107,14 @@ struct DeviceViewKernel : public DynamicKernelBase<TValue, tDimension>{
 
 	BOLT_DECL_HYBRID
 	DeviceViewKernel(DeviceImageView<TValue, 3> view):
-	DynamicKernelBase<TValue, tDimension>(view.size(), bolt::Div(view.size(), 2))
+	DynamicKernelBase<TValue, tDimension>(view.size(), bolt::div(view.size(), 2))
 	{
+		if(view.strides() != stridesFromSize(view.size())) {
+			BOLT_ERROR_FORMAT("Device view is not continuous in memory.");
+		}
 		this->kernel_ = view.pointer();
 	}
-
-};*/
+};
 
 /// Kernel stored on host
 template<typename TValue, int tDimension>
