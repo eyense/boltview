@@ -95,8 +95,8 @@ public:
 		TElement *slice_corner = this->host_ptr_ + int64_t(this->strides_[tSliceDimension]) * slice;
 		return HostImageConstView<TElement, tDimension - 1, Policy>(
 				slice_corner,
-				RemoveDimension(this->size_, tSliceDimension),
-				RemoveDimension(this->strides_, tSliceDimension));
+				removeDimension(this->size_, tSliceDimension),
+				removeDimension(this->strides_, tSliceDimension));
 	}
 
 	HostImageConstView<TElement, tDimension, Policy> constView() const {
