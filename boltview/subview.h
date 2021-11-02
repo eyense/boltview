@@ -359,6 +359,12 @@ auto slice(
 	return detail::SliceGenerator<TView, tSliceDimension, TView::kIsMemoryBased>::invoke(view, slice);
 }
 
+template<typename TView>
+struct IsInterpolatedView<SubImageView<TView>> : IsInterpolatedView<TView> {};
+
+template<typename TView>
+struct IsInterpolatedView<BorderedSubImageView<TView>> : IsInterpolatedView<TView> {};
+
 /// @}
 
 }  // namespace bolt
