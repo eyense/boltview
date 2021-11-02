@@ -338,7 +338,7 @@ auto borderedSubview(
 	)
 	-> BorderedSubImageView<TView>
 {
-	return BorderedSubview(view, region.corner, region.size);
+	return borderedSubview(view, region.corner, region.size);
 }
 
 
