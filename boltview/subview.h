@@ -338,7 +338,7 @@ auto borderedSubview(
 	)
 	-> BorderedSubImageView<TView>
 {
-	return BorderedSubview(view, region.corner, region.size);
+	return borderedSubview(view, region.corner, region.size);
 }
 
 
@@ -358,6 +358,12 @@ auto slice(
 	}
 	return detail::SliceGenerator<TView, tSliceDimension, TView::kIsMemoryBased>::invoke(view, slice);
 }
+
+template<typename TView>
+struct IsInterpolatedView<SubImageView<TView>> : IsInterpolatedView<TView> {};
+
+template<typename TView>
+struct IsInterpolatedView<BorderedSubImageView<TView>> : IsInterpolatedView<TView> {};
 
 /// @}
 
