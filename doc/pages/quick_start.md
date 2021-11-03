@@ -69,15 +69,15 @@ Int3 offset = -Div(pattern.Size(), Int3(2, 2, 2));
 copy(paddedView(pattern.View(), image.Size(), offset, 0.0f), padded_pattern.View());
 
 // Allocate images for FFT spectra
-DeviceImage<cufftComplex, 3> image_fft(GetFFTImageSize(image.Size()));
-DeviceImage<cufftComplex, 3> pattern_fft(GetFFTImageSize(image.Size()));
+DeviceImage<DeviceComplexType, 3> image_fft(GetFFTImageSize(image.Size()));
+DeviceImage<DeviceComplexType, 3> pattern_fft(GetFFTImageSize(image.Size()));
 
 // Perform forward FFT
 FFTCalculator fft_calculator(image.Size(), image.Strides(), image_fft.Size(), image_fft.Strides());
 fft_calculator.Forward(image.View(), image_fft.View());
 
 // Compute correlation (complex conjugate multiplication of spectra)
-DeviceImage<cufftComplex, 3> tmp_fft(image_fft.Size());
+DeviceImage<DeviceComplexType, 3> tmp_fft(image_fft.Size());
 FFTCorrelation(image_fft.ConstView(), pattern_fft.ConstView(), tmp_fft.View());
 ECIP_CHECK(cudaThreadSynchronize());
 

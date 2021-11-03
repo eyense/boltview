@@ -3,7 +3,7 @@
 
 #define BOOST_TEST_MODULE UniquePtrTest
 #include <boost/test/included/unit_test.hpp>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 #include <cuda.h>
 #include <boltview/unique_ptr.h>
 

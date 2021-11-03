@@ -54,7 +54,7 @@ void FftTask::allocate(GpuMemoryManager* gpu) {
 	forward_calculator = gpu->getBuffer(FftCalculatorDescriptor<1, DeviceFftPolicy<Forward, Stack<1,2>>>(size));
 	inverse_calculator = gpu->getBuffer(FftCalculatorDescriptor<1, DeviceFftPolicy<Inverse, Stack<1,2>>>(size));
 	image_real = gpu->getBuffer(DeviceImageDescriptor<float, 3>(size));
-	image_complex = gpu->getBuffer(DeviceImageDescriptor<cufftComplex, 3>(fft_size));
+	image_complex = gpu->getBuffer(DeviceImageDescriptor<DeviceComplexType, 3>(fft_size));
 }
 
 void FftTask::execute(cudaStream_t stream) {

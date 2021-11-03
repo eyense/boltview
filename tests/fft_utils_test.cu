@@ -16,7 +16,7 @@
 #include <boltview/device_image.h>
 #include <boltview/device_image_view.h>
 #include <boltview/host_image.h>
-#include "tests/test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 #include <boltview/math/complex.h>
 #include <boltview/fft/fft_calculator.h>
@@ -197,12 +197,12 @@ void unaryOperationsTestOnSine(Vector<int, tDim> size, Vector<float, tDim> ampli
 
 	DeviceImage<float, tDim> devicePhase(image_fft.size());
 	DeviceImage<float, tDim> deviceMagnitude(image_fft.size());
-	DeviceImage<cufftComplex, tDim> deviceConjugate(image_fft.size());
+	DeviceImage<DeviceComplexType, tDim> deviceConjugate(image_fft.size());
 
 	auto hostFrequency = forward.createFrequencyDomainHostImage();
 	HostImage<float, tDim> devicePhaseResult(image_fft.size());
 	HostImage<float, tDim> deviceMagnitudeResult(image_fft.size());
-	HostImage<cufftComplex, tDim> deviceConjugateResult(image_fft.size());
+	HostImage<DeviceComplexType, tDim> deviceConjugateResult(image_fft.size());
 
 	forward.calculate(image.view(), image_fft.view());
 	copy(multiplyByFactor(1.0f / sinus_view.elementCount(), image_fft.constView()), image_fft.view());
@@ -748,26 +748,26 @@ void crossPowerSpectrumTestWithSines(Vector<int, tDim> size){
 	auto checkFreqB = devCalc.createFrequencyDomainHostImage();
 	copy(devFreqA.view(), checkFreqA.view());
 	copy(devFreqB.view(), checkFreqB.view());
-	testViewsElementsForIdentity(checkFreqA.view(), cast<cufftComplex>(hostFreqA.view()), kFftEpsilon);
-	testViewsElementsForIdentity(checkFreqB.view(), cast<cufftComplex>(hostFreqB.view()), kFftEpsilon);
+	testViewsElementsForIdentity(checkFreqA.view(), cast<DeviceComplexType>(hostFreqA.view()), kFftEpsilon);
+	testViewsElementsForIdentity(checkFreqB.view(), cast<DeviceComplexType>(hostFreqB.view()), kFftEpsilon);
 
 	auto devConjugateB = devCalc.createFrequencyDomainDeviceImage();
 	auto checkConjugateB = devCalc.createFrequencyDomainHostImage();
 	copy(conjugate(devFreqB.view()), devConjugateB.view());
 	copy(devConjugateB.view(), checkConjugateB.view());
-	testViewsElementsForIdentity(checkConjugateB.view(), cast<cufftComplex>(conjugate(hostFreqB.view())), kFftEpsilon);
+	testViewsElementsForIdentity(checkConjugateB.view(), cast<DeviceComplexType>(conjugate(hostFreqB.view())), kFftEpsilon);
 
 	auto devHadamard = devCalc.createFrequencyDomainDeviceImage();
 	auto checkHadamard = devCalc.createFrequencyDomainHostImage();
 	copy(hadamard(devFreqA.view(), devConjugateB.view()), devHadamard.view());
 	copy(devHadamard.view(), checkHadamard.view());
-	testViewsElementsForIdentity(checkHadamard.view(), cast<cufftComplex>(hadamard(hostFreqA.view(), conjugate(hostFreqB.view()))), kFftEpsilon);
+	testViewsElementsForIdentity(checkHadamard.view(), cast<DeviceComplexType>(hadamard(hostFreqA.view(), conjugate(hostFreqB.view()))), kFftEpsilon);
 
 	auto devNormalize = devCalc.createFrequencyDomainDeviceImage();
 	auto checkNormalize = devCalc.createFrequencyDomainHostImage();
 	copy(normalize(devHadamard.view()), devNormalize.view());
 	copy(devNormalize.view(), checkNormalize.view());
-	testViewsElementsForIdentity(checkNormalize.view(), cast<cufftComplex>(normalize(hadamard(hostFreqA.view(), conjugate(hostFreqB.view())))), kFftEpsilon);
+	testViewsElementsForIdentity(checkNormalize.view(), cast<DeviceComplexType>(normalize(hadamard(hostFreqA.view(), conjugate(hostFreqB.view())))), kFftEpsilon);
 
 	auto deviceCrossPower = devCalc.createFrequencyDomainDeviceImage();
 	copy(crossPowerSpectrum(devFreqA.view(), devFreqB.view()), deviceCrossPower.view());
@@ -775,7 +775,7 @@ void crossPowerSpectrumTestWithSines(Vector<int, tDim> size){
 	copy(deviceCrossPower.view(), deviceCrossPowerCheck.view());
 	auto hostCrossPower = crossPowerSpectrum(hostFreqA.view(), hostFreqB.view());
 
-	testViewsElementsForIdentity(cast<cufftComplex>(hostCrossPower), deviceCrossPowerCheck.view(), kFftEpsilon);
+	testViewsElementsForIdentity(cast<DeviceComplexType>(hostCrossPower), deviceCrossPowerCheck.view(), kFftEpsilon);
 }
 
 BOOST_AUTO_TEST_CASE(CrossPowerSpectrums){
@@ -887,7 +887,7 @@ void StackTestWithConstants(Vector<int, tDim> size){
 
 
 	auto hostFreqs = std::unique_ptr<std::unique_ptr<HostImage<HostComplexType, tDim-1>>[]>(new std::unique_ptr<HostImage<HostComplexType, tDim-1>>[get(size, tStackDim)]);
-	auto checkFreqs = std::unique_ptr<std::unique_ptr<HostImage<cufftComplex, tDim-1>>[]>(new std::unique_ptr<HostImage<cufftComplex, tDim-1>>[get(size, tStackDim)]);
+	auto checkFreqs = std::unique_ptr<std::unique_ptr<HostImage<DeviceComplexType, tDim-1>>[]>(new std::unique_ptr<HostImage<DeviceComplexType, tDim-1>>[get(size, tStackDim)]);
 
 	auto hostSpaces = std::unique_ptr<std::unique_ptr<HostImage<float, tDim-1>>[]>(new std::unique_ptr<HostImage<float, tDim-1>>[get(size, tStackDim)]);
 	auto checkSpaces = std::unique_ptr<std::unique_ptr<HostImage<float, tDim-1>>[]>(new std::unique_ptr<HostImage<float, tDim-1>>[get(size, tStackDim)]);
@@ -931,7 +931,7 @@ void StackTestWithConstants(Vector<int, tDim> size){
 		auto devOutput = devForward.createFrequencyDomainDeviceImage();
 		devForward.calculateAndNormalize(devInput.view(), devOutput.view());
 
-		checkFreqs.get()[inputIndex].reset(new HostImage<cufftComplex, tDim-1>(getFftImageSize(sub_size)));
+		checkFreqs.get()[inputIndex].reset(new HostImage<DeviceComplexType, tDim-1>(getFftImageSize(sub_size)));
 		copy(devOutput.view(), checkFreqs.get()[inputIndex].get()->view());
 
 	}
@@ -947,11 +947,11 @@ void StackTestWithConstants(Vector<int, tDim> size){
 	auto checkStackFreq = devStackForward.createFrequencyDomainHostImage();
 	copy(devStackFreq.view(), checkStackFreq.view());
 
-	testViewsElementsForIdentity(checkStackFreq.view(), cast<cufftComplex>(hostStackFreq.view()), kFftEpsilon);
+	testViewsElementsForIdentity(checkStackFreq.view(), cast<DeviceComplexType>(hostStackFreq.view()), kFftEpsilon);
 
 	// CHECK frequency stack to non stack
 	for(int inputIndex = 0; inputIndex < inputs; inputIndex++){
-		testViewsElementsForIdentity(cast<cufftComplex>(hostFreqs.get()[inputIndex].get()->view()), checkFreqs.get()[inputIndex].get()->view(), kFftEpsilon);
+		testViewsElementsForIdentity(cast<DeviceComplexType>(hostFreqs.get()[inputIndex].get()->view()), checkFreqs.get()[inputIndex].get()->view(), kFftEpsilon);
 		testViewsElementsForIdentity(hostFreqs.get()[inputIndex].get()->view(), slice<tStackDim>(hostStackFreq.view(), inputIndex), 0);
 		// NOTE(fidli): it seems that batched fft vs non batched fft makes difference, but neglectable
 		testViewsElementsForIdentity(checkFreqs.get()[inputIndex].get()->view(), slice<tStackDim>(checkStackFreq.view(), inputIndex), 0.000000001);

@@ -12,7 +12,7 @@
 #include <boltview/procedural_views.h>
 #include <boltview/view_iterators.h>
 #include <boltview/reduce.h>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/test/included/unit_test.hpp>

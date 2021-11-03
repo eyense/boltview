@@ -202,7 +202,7 @@ phaseShift(TView frequency_domain_view, int space_domain_size, Vector<float, TVi
 /// Functor returning amplitude of complex numbers
 struct FFTAmplitudeFunctor {
 	BOLT_DECL_HYBRID
-	float operator()(cufftComplex in_value) const {
+	float operator()(DeviceComplexType in_value) const {
 		return (in_value.x * in_value.x) + (in_value.y * in_value.y);
 	}
 	float operator()(HostComplexType in_value) const {

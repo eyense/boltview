@@ -6,7 +6,7 @@
 #include <boltview/copy.h>
 #include <boltview/host_image.h>
 #include <boltview/device_image.h>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 #include <algorithm>
 #include <boost/test/test_tools.hpp>
 #include <limits>

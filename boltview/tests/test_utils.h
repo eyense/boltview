@@ -12,7 +12,7 @@
 #include <boltview/copy.h>
 #include <boltview/view_traits.h>
 #include <boost/test/included/unit_test.hpp>
-#include <tests/test_defs.h>
+#include <boltview/tests/test_defs.h>
 
 #if defined(__CUDACC__)
 	#include <boltview/device_image.h>

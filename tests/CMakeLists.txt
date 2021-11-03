@@ -28,7 +28,6 @@ set(${PROJECT_NAME}_TESTS
 	# "image_stack_test"
 )
 if(BoltView_ENABLE_FFT)
-	find_library(CUFFT_LIB NAME cufft PATHS /usr/local/cuda/lib64)
 	list( APPEND ${PROJECT_NAME}_TESTS "fft_utils_test")
 endif(BoltView_ENABLE_FFT)
 

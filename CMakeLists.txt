@@ -25,6 +25,11 @@ set(Boost_USE_MULTITHREADED ON)
 
 add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.53.0 COMPONENTS system filesystem REQUIRED)
+if(${PROJECT_NAME}_ENABLE_FFT)
+	find_library(CUFFT_LIB NAME cufft PATHS /usr/local/cuda/lib64 REQUIRED)
+    # NOTE(fidli): fftw3 is complicated (would require other cmake files perhaps, but it compile crashesh with missing headers
+    # so it is apparent 
+endif()
 
 set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/image_stack.h"
@@ -131,8 +136,9 @@ target_compile_features(bolt INTERFACE cxx_std_14)
 target_sources(bolt INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_HEADERS}>)
 target_link_libraries(bolt INTERFACE 
 				Boost::filesystem 
-				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb-devel>"
-				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:libcufft-dev,fftw-devel>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb>"
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:fftw3f>"
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:${CUFFT_LIB}>"
 				)
 target_include_directories(bolt INTERFACE 
 				"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -211,10 +217,10 @@ install(DIRECTORY boltview
 
 set(CPACK_GENERATOR TGZ;STGZ;DEB;RPM)
 # set(CPACK_SOURCE_GENERATOR TGZ)
-# NOTE(fidli): obviously we need cuda, but the package includes version name
+# NOTE(fidli): obviously we need cuda, but the package includes version name and we dont know that version
 # cannot use dll, because you may want not to run, but build
-# cannot use static lib, because you may link statically
-# I dont know cpack well enough, so omitting cuda libraries
+# cannot use static lib, because you may link dynamically
+# I dont know cpack well enough to regexp this, so omitting cuda libraries
 set(CPACK_RPM_PACKAGE_REQUIRES "boost-system >= 1.53, boost-filesystem >= 1.53")
 if(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS)
     string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",tbb-devel")
