@@ -22,6 +22,6 @@ shift
 while [ $# -gt 0 ]
 do
 	#printf -- "-- processing %s...\\n" "$1"
-	grep -Hn "// DEBUG_BREAK" $1 | cut -d":" -f1-2 | sed 's:^.*/:break :' >> "$output"
+	grep -Hn "// DEBUG_BREAK" $1 | cut -d":" -f1-2 | sed -E "s@^(.*)@break \1@" >> "$output"
 	shift
 done
