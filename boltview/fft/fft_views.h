@@ -1,9 +1,13 @@
 // Copyright 2019 Eyen SE
 // Author: Adam Kubista adam.kubista@eyen.se
 // Author: Jan Kolomaznik jan.kolomaznik@eyen.se
-// Author: Martin Hora martin.hora@eyen.se
 
+// Author: Martin Hora martin.hora@eyen.se
 #pragma once
+
+#ifndef BOLT_ENABLE_FFT
+#error "FFT is disabled in BoltView"
+#endif
 
 #include <boltview/procedural_views.h>
 

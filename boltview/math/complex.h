@@ -3,12 +3,15 @@
 
 #pragma once
 
+#ifdef BOLT_ENABLE_FFT
 #include <complex>
 #include <cufft.h>
 #include <fftw3.h>
+#endif
 
 namespace bolt {
 
+#ifdef BOLT_ENABLE_FFT
 using DeviceComplexType = cufftComplex;
 union HostComplexType{
 	fftwf_complex fftw;
@@ -24,6 +27,14 @@ union HostComplexType{
 		return cuda;
 	}
 };
+#else
+struct Complex{
+    float x;
+    float y;
+};
+using DeviceComplexType = Complex;
+using HostComplexType = Complex;
+#endif
 
 }  // namespace bolt
 

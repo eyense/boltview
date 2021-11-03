@@ -40,7 +40,7 @@ void testVectorsForIdentity(TVector1 v1, TVector2 v2, float epsilon = kFloatTest
 }
 
 template<>
-void checkElementsForEquality(cufftComplex A, cufftComplex B, float epsilon){
+void checkElementsForEquality(DeviceComplexType A, DeviceComplexType B, float epsilon){
 	// NOTE(fidli): boost_check_close uses Knuths tolerance https:// www.boost.org/doc/libs/1_65_0/libs/test/doc/html/boost_test/testing_tools/extended_comparison/floating_point/floating_points_comparison_impl.html
 	// BOOST_CHECK_CLOSE does not work for one element being zero
 	BOOST_CHECK_SMALL(A.x-B.x, epsilon);

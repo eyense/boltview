@@ -131,7 +131,8 @@ target_compile_features(bolt INTERFACE cxx_std_14)
 target_sources(bolt INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_HEADERS}>)
 target_link_libraries(bolt INTERFACE 
 				Boost::filesystem 
-				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb-devel>"
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:libcufft-dev,fftw-devel>"
 				)
 target_include_directories(bolt INTERFACE 
 				"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -141,6 +142,7 @@ target_compile_options(bolt INTERFACE
 				"$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>"
 				)
 target_compile_definitions(bolt INTERFACE
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:BOLT_ENABLE_FFT>"
 				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:BOLT_USE_THREAD_BUILDING_BLOCKS>"
 				"$<$<BOOL:${${PROJECT_NAME}_USE_UNIFIED_MEMORY}>:BOLT_USE_UNIFIED_MEMORY>"
 				)
