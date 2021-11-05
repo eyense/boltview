@@ -11,6 +11,8 @@
 
 
 if (NOT BOLT_FOUND)
+    # TODO(fidli): set BOLT_FOUND
+    # also set BOLT_BREAKPOINTS_SH_PATH so that other projects can use this as well
 	find_path(BOLT_INCLUDE_DIR NAMES boltview/device_image.h
 		PATHS
 		${BOLT_ROOT}

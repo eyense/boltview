@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 
 project(BoltView_tests CXX CUDA)
 
@@ -27,8 +27,17 @@ set(${PROJECT_NAME}_TESTS
 	"test_64bit_indices"
 	# "image_stack_test"
 )
+
+set(${PROJECT_NAME}_BPLIST_TESTS "texture_image_test_utils.h")
+foreach(f ${${PROJECT_NAME}_TESTS})
+    LIST(APPEND ${PROJECT_NAME}_BPLIST_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/${f}.cu")
+endforeach()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    BoltView_breakpoints(${PROJECT_NAME}_BP_TESTS "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST_TESTS)
+endif()
+
 if(BoltView_ENABLE_FFT)
-	find_library(CUFFT_LIB NAME cufft PATHS /usr/local/cuda/lib64)
 	list( APPEND ${PROJECT_NAME}_TESTS "fft_utils_test")
 endif(BoltView_ENABLE_FFT)
 

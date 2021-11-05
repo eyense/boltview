@@ -16,12 +16,9 @@ set -e
 output=$1
 shift
 
-# clear file
->"$output"
-
 while [ $# -gt 0 ]
 do
 	#printf -- "-- processing %s...\\n" "$1"
-	grep -Hn "BOLT_BREAK" $1 | cut -d":" -f1-2 | sed -E "s@^(.*)@break \1@" >> "$output"
+	grep -PHn "(?<!#define )BOLT_BREAK_DEF" $1 | cut -d":" -f1-2 | sed -E "s@^(.*)@break \1@" >> "$output"
 	shift
 done

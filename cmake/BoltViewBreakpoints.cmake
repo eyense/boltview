@@ -3,7 +3,7 @@
 #
 # Author: Jakub Klener jakub.klener@eyen.eu
 #
-macro(breakpoints TARGET_NAME OUTPUT_FILE FILE_LIST)
+macro(BoltView_breakpoints TARGET_NAME OUTPUT_FILE FILE_LIST)
 	add_custom_target(${TARGET_NAME} ALL DEPENDS ${OUTPUT_FILE})
 	set(templist "")
 	foreach(f ${${FILE_LIST}})
@@ -11,7 +11,7 @@ macro(breakpoints TARGET_NAME OUTPUT_FILE FILE_LIST)
 	ENDFOREACH(f)
 	add_custom_command(
 		OUTPUT ${OUTPUT_FILE}
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake/breakpoints.sh ${OUTPUT_FILE} ${templist}
+		COMMAND ${BOLT_BREAKPOINTS_SH_PATH} ${OUTPUT_FILE} ${templist}
 		DEPENDS ${${FILE_LIST}}
 	)
 endmacro(breakpoints)
