@@ -109,6 +109,8 @@ set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/exceptions.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_utils.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_views.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/tests/test_utils.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/tests/test_defs.h"
 )
 
 set(${PROJECT_NAME}_TCC
