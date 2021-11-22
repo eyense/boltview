@@ -571,7 +571,7 @@ void DeviceFftPolicyHelper<Forward>::calculateAsync(const DeviceFftPlan<TSizeTyp
 	BOLT_DFORMAT("FFT Forward transformation: size %1%", input.size());
 	requireDimensions(plan, input, output);
 	BOLT_CHECK_ERROR_STATE("Problem before forward FFT call");
-	static_assert(sizeof(cufftComplex) == sizeof(typename TOutputView::Element), "Output view element size must match size of cufftComplex");
+	static_assert(sizeof(DeviceComplexType) == sizeof(typename TOutputView::Element), "Output view element size must match size of DeviceComplexType");
 	BOLT_CUFFT_CHECK(cufftExecR2C(*(plan->plan.get()), input.pointer(), output.pointer()));
 }
 
@@ -582,7 +582,7 @@ void DeviceFftPolicyHelper<Inverse>::calculateAsync(const DeviceFftPlan<TSizeTyp
 	BOLT_DFORMAT("FFT Inverse transformation: size %1%", input.size());
 	requireDimensions(plan, input, output);
 	BOLT_CHECK_ERROR_STATE("Problem before forward FFT call");
-	static_assert(sizeof(cufftComplex) == sizeof(typename TInputView::Element), "Input view element size must match size of cufftComplex");
+	static_assert(sizeof(DeviceComplexType) == sizeof(typename TInputView::Element), "Input view element size must match size of DeviceComplexType");
 	BOLT_CUFFT_CHECK(cufftExecC2R(*(plan->plan.get()), input.pointer(), output.pointer()));
 }
 

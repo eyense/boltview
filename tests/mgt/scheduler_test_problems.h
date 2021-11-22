@@ -81,7 +81,7 @@ private:
 	GpuBufferView<FftCalculator<1, DeviceFftPolicy<Forward, Stack<1,2>>>> forward_calculator;
 	GpuBufferView<FftCalculator<1, DeviceFftPolicy<Inverse, Stack<1,2>>>> inverse_calculator;
 	GpuBufferView<DeviceImage<float, 3>> image_real;
-	GpuBufferView<DeviceImage<cufftComplex, 3>> image_complex;
+	GpuBufferView<DeviceImage<DeviceComplexType, 3>> image_complex;
 };
 
 template<typename TTask>

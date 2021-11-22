@@ -11,7 +11,7 @@
 #include <boltview/subview.h>
 
 #include "texture_image_test_utils.h"
-#include "test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 namespace bolt {
 

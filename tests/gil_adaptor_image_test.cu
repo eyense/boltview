@@ -3,7 +3,7 @@
 
 
 #define BOOST_TEST_MODULE GilViewAdaptorTest
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 
 #include <algorithm>
 #include <iostream>

@@ -5,7 +5,7 @@
 
 #include <boltview/convolution.h>
 #include <boltview/detail/convolution_foreach.h>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 
 #include <thrust/device_vector.h>
 #include <thrust/sequence.h>
