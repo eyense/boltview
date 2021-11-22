@@ -163,10 +163,11 @@ set(${PROJECT_NAME}_BPLIST
 	${${PROJECT_NAME}_TCC}
 )
 
+include(BoltViewBreakpoints)
+set(BOLT_BREAKPOINTS_SH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/breakpoints.sh")
 
-include(breakpoints)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
+	BoltView_breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
 endif()
 
 if(${PROJECT_NAME}_ENABLE_TESTS)
@@ -197,6 +198,9 @@ install(EXPORT ${PROJECT_NAME}_Targets
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
               "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+install(FILES "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Breakpoints.cmake"
+              "${PROJECT_SOURCE_DIR}/cmake/breakpoints.sh"
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 install(DIRECTORY boltview
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

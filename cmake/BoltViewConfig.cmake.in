@@ -1,6 +1,8 @@
 @PACKAGE_INIT@
 
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Breakpoints.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/breakpoints.sh")
 check_required_components("@PROJECT_NAME@")
 
 option(@PROJECT_NAME@_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" ON)
