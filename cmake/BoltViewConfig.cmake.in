@@ -7,3 +7,8 @@ option(@PROJECT_NAME@_ENABLE_FFT "Enable fft tools - add CUFFT as a dependency" 
 option(@PROJECT_NAME@_USE_UNIFIED_MEMORY "Enable features that use unified memory" OFF)
 option(@PROJECT_NAME@_USE_THREAD_BUILDING_BLOCKS "Enable features that use thread building blocks" OFF)
 
+target_compile_definitions(@PROJECT_NAME@::bolt INTERFACE
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:BOLT_ENABLE_FFT>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:BOLT_USE_THREAD_BUILDING_BLOCKS>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_UNIFIED_MEMORY}>:BOLT_USE_UNIFIED_MEMORY>"
+				)
