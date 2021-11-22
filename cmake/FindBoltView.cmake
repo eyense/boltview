@@ -1,3 +1,4 @@
+MESSAGE(WARNING "FindBolt is out of date, it might not work")
 # Try to find Eyen's ECIP library
 
 # Once done this will define
