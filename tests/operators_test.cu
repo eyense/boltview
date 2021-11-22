@@ -4,7 +4,7 @@
 #define BOOST_TEST_MODULE OperatorsTest
 #include <boost/test/included/unit_test.hpp>
 
-#include "tests/test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 #include <boltview/procedural_views.h>
 #include <boltview/operators.tcc>

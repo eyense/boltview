@@ -19,7 +19,7 @@
 #include <boltview/device_image_view.h>
 #include <boltview/reduce.h>
 #include <boltview/subview.h>
-#include "tests/test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 namespace bolt {
 

@@ -25,6 +25,11 @@ set(Boost_USE_MULTITHREADED ON)
 
 add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.53.0 COMPONENTS system filesystem REQUIRED)
+if(${PROJECT_NAME}_ENABLE_FFT)
+	find_library(CUFFT_LIB NAME cufft PATHS /usr/local/cuda/lib64 REQUIRED)
+    # NOTE(fidli): fftw3 is complicated (would require other cmake files perhaps, but it compile crashesh with missing headers
+    # so it is apparent 
+endif()
 
 set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/image_stack.h"
@@ -104,6 +109,8 @@ set(${PROJECT_NAME}_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/exceptions.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_utils.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/fft/fft_views.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/tests/test_utils.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/boltview/tests/test_defs.h"
 )
 
 set(${PROJECT_NAME}_TCC
@@ -131,8 +138,9 @@ target_compile_features(bolt INTERFACE cxx_std_14)
 target_sources(bolt INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_HEADERS}>)
 target_link_libraries(bolt INTERFACE 
 				Boost::filesystem 
-				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb-devel>"
-				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:libcufft-dev,fftw-devel>"
+				"$<$<BOOL:${${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS}>:tbb>"
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:fftw3f>"
+				"$<$<BOOL:${${PROJECT_NAME}_ENABLE_FFT}>:${CUFFT_LIB}>"
 				)
 target_include_directories(bolt INTERFACE 
 				"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -155,10 +163,11 @@ set(${PROJECT_NAME}_BPLIST
 	${${PROJECT_NAME}_TCC}
 )
 
+include(BoltViewBreakpoints)
+set(BOLT_BREAKPOINTS_SH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/breakpoints.sh")
 
-include(breakpoints)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
+	BoltView_breakpoints(${PROJECT_NAME}_BP "${PROJECT_BINARY_DIR}/breakpoints.gdb" ${PROJECT_NAME}_BPLIST)
 endif()
 
 if(${PROJECT_NAME}_ENABLE_TESTS)
@@ -190,6 +199,9 @@ install(EXPORT ${PROJECT_NAME}_Targets
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
               "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+install(FILES "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Breakpoints.cmake"
+              "${PROJECT_SOURCE_DIR}/cmake/breakpoints.sh"
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 install(DIRECTORY boltview
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	)
@@ -211,10 +223,10 @@ install(DIRECTORY boltview
 
 set(CPACK_GENERATOR TGZ;STGZ;DEB;RPM)
 # set(CPACK_SOURCE_GENERATOR TGZ)
-# NOTE(fidli): obviously we need cuda, but the package includes version name
+# NOTE(fidli): obviously we need cuda, but the package includes version name and we dont know that version
 # cannot use dll, because you may want not to run, but build
-# cannot use static lib, because you may link statically
-# I dont know cpack well enough, so omitting cuda libraries
+# cannot use static lib, because you may link dynamically
+# I dont know cpack well enough to regexp this, so omitting cuda libraries
 set(CPACK_RPM_PACKAGE_REQUIRES "boost-system >= 1.53, boost-filesystem >= 1.53")
 if(${PROJECT_NAME}_USE_THREAD_BUILDING_BLOCKS)
     string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",tbb-devel")
@@ -222,6 +234,9 @@ endif()
 if(${PROJECT_NAME}_ENABLE_FFT)
     string(APPEND CPACK_RPM_PACKAGE_REQUIRES ",fftw-devel")
 endif()
+# NOTE(fidli): cannot remove group_execute, or you get ???
+SET(CPACK_RPM_DEFAULT_DIR_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ)
+SET(CPACK_RPM_DEFAULT_FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ)
 
 set(CPACK_PACKAGE_CONTACT "jan.kolomaznik@eyen.se")
 set(CPACK_PACKAGE_VENDOR "Eyen SE")

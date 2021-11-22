@@ -13,6 +13,7 @@ namespace bolt {
 
 #ifdef BOLT_ENABLE_FFT
 using DeviceComplexType = cufftComplex;
+using DeviceDoubleComplexType = cufftDoubleComplex;
 union HostComplexType{
 	fftwf_complex fftw;
 	cufftComplex cuda;
@@ -32,8 +33,21 @@ struct Complex{
     float x;
     float y;
 };
+
 using DeviceComplexType = Complex;
-using HostComplexType = Complex;
+struct DeviceDoubleComplexType{
+    double x;
+    double y;
+};
+union HostComplexType{
+	Complex fftw;
+	Complex cuda;
+	struct{
+		float x;
+		float y;
+	};
+};
+
 #endif
 
 }  // namespace bolt

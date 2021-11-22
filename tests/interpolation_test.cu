@@ -9,7 +9,7 @@
 
 #include <boltview/host_image_view.h>
 #include <boltview/interpolation.h>
-#include "tests/test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 
 namespace bolt {

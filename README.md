@@ -171,6 +171,7 @@ BoltView has several dependencies:
  * [CUDA](https://developer.nvidia.com/cuda-zone)
  * [Boost](https://www.boost.org/)
  * [CMake](https://cmake.org/)
+ * [FFTW](https://www.fftw.org/)
  * [Threading Building Blocks (TBB)](https://github.com/oneapi-src/oneTBB) - optional
 	
 Minimal `CMakeLists.txt` for your project can look like this:

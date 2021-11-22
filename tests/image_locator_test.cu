@@ -3,7 +3,7 @@
 
 #define BOOST_TEST_MODULE ImageLocatorTest
 #include <boost/test/included/unit_test.hpp>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 #include <boltview/image_locator.h>
 #include <boltview/device_image.h>
 #include <boltview/host_image.h>

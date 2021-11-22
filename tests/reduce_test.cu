@@ -20,8 +20,8 @@
 #include <boltview/unified_image.h>
 #endif
 
-#include "test_defs.h"
-#include "test_utils.h"
+#include <boltview/tests/test_defs.h>
+#include <boltview/tests/test_utils.h>
 
 
 namespace bolt {

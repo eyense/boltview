@@ -12,7 +12,7 @@
 #include <boltview/cuda_utils.h>
 #include <boltview/math/quaternion.h>
 
-#include "test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 namespace bolt {
 
