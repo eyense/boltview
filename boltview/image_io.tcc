@@ -56,11 +56,11 @@ inline char getIdentifier(double  /*arg*/) {
 }
 
 #ifdef __CUDACC__
-inline char getIdentifier(cufftComplex arg) {
+inline char getIdentifier(DeviceComplexType arg) {
 	return 'C';
 }
 
-inline char getIdentifier(cufftDoubleComplex arg) {
+inline char getIdentifier(DeviceDoubleComplexType arg) {
 	return 'Z';
 }
 #endif

@@ -20,8 +20,8 @@
 #include <boltview/unified_image.h>
 #endif
 
-#include "test_defs.h"
-#include "test_utils.h"
+#include <boltview/tests/test_defs.h>
+#include <boltview/tests/test_utils.h>
 
 namespace bolt {
 
@@ -223,13 +223,13 @@ BOLT_AUTO_TEST_CASE(ForeachPositionOverBigView) {
 }
 
 BOLT_AUTO_TEST_CASE(DimReduceOverStackOfSmallImages) {
-	DeviceImage<int, 3> device_image(32, 32, 1 << 20);
+	DeviceImage<int, 3> device_image(32, 32, 1 << 19);
 	DeviceImage<int, 2> target_image(32, 32);
 
 	auto source_view = makeConstantImageView(1, device_image.size());
 	copy(source_view, device_image.view());
 	dimensionReduce(device_image.view(), target_image.view(), DimensionValue<2>{}, 0, thrust::plus<int>());
-	BOOST_CHECK_EQUAL(sumSquareDifferences(makeConstantImageView(1 << 20, target_image.size()), target_image.view(), 0), 0);
+	BOOST_CHECK_EQUAL(sumSquareDifferences(makeConstantImageView(1 << 19, target_image.size()), target_image.view(), 0), 0);
 }
 
 BOLT_AUTO_TEST_CASE(HostForEachPosition) {

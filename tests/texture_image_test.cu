@@ -3,7 +3,7 @@
 
 #define BOOST_TEST_MODULE TextureImageTest
 #include <boost/test/included/unit_test.hpp>
-#include <tests/test_utils.h>
+#include <boltview/tests/test_utils.h>
 #include <cuda.h>
 #include <boltview/copy.h>
 #include <boltview/detail/meta_algorithm_utils.h>
@@ -13,7 +13,7 @@
 #include <boltview/procedural_views.h>
 #include <boltview/subview.h>
 #include <boltview/texture_image.h>
-#include <tests/texture_image_test_utils.h>
+#include <boltview/tests/texture_image_test_utils.h>
 
 #include <algorithm>
 #include <boost/timer.hpp>

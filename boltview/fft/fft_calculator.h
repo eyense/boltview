@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef BOLT_ENABLE_FFT
+#error "FFT is disabled in BoltView"
+#endif
 
 #include <complex>
 #include <cufft.h>

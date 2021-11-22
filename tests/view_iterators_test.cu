@@ -15,7 +15,7 @@
 
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/test/included/unit_test.hpp>
-#include "tests/test_utils.h"
+#include <boltview/tests/test_utils.h>
 
 
 namespace bolt {
