@@ -226,8 +226,8 @@ struct FileInfoTag{};
 				BOLT_DFORMAT(msg); \
 				auto e = ::bolt::CuFFTError(); \
 				e << bolt::MessageErrorInfo(msg); \
-				e << boost::error_info<LineInfoTag,int>(__LINE__);\
-				e << boost::error_info<FileInfoTag,std::string>(__FILE__);\
+				e << boost::error_info<::bolt::LineInfoTag,int>(__LINE__);\
+				e << boost::error_info<::bolt::FileInfoTag,std::string>(__FILE__);\
 				BOLT_THROW(e);\
 			}\
 		} while (false);
