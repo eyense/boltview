@@ -14,8 +14,10 @@
 #include <iomanip>
 
 
+#if defined(__CUDACC__)
 #include <boltview/device_image.h>
 #include <boltview/device_image_view.h>
+#endif
 #include <boltview/host_image.h>
 
 #include <boltview/math/complex.h>
