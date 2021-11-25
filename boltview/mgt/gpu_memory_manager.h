@@ -203,15 +203,15 @@ public:
 	using ManagedBuffers = std::tuple<bolt::mgt::GpuBufferView<TBufferTypes>...>;
 
 	template<typename ...TAllocationArgs>
-	void Allocate(bolt::mgt::GpuMemoryManager* gpu, const TAllocationArgs & ... arguments) {
+	void allocate(bolt::mgt::GpuMemoryManager* gpu, const TAllocationArgs & ... arguments) {
 		static_assert(sizeof...(TBufferTypes) == sizeof...(TAllocationArgs), "Argument count is different from the buffer count");
-		AllocateImpl(gpu, std::make_tuple(arguments...), bolt::MakeIntSequence<sizeof...(TAllocationArgs)>{});
+		allocateImpl(gpu, std::make_tuple(arguments...), bolt::MakeIntSequence<sizeof...(TAllocationArgs)>{});
 	}
 
 	template<typename ...TAllocationArgs>
-	static int64_t Estimate(const TAllocationArgs & ... arguments) {
+	static int64_t estimate(const TAllocationArgs & ... arguments) {
 		static_assert(sizeof...(TBufferTypes) == sizeof...(TAllocationArgs), "Argument count is different from the buffer count");
-		return EstimateImpl(std::make_tuple(arguments...), bolt::MakeIntSequence<sizeof...(TAllocationArgs)>{});
+		return estimateImpl(std::make_tuple(arguments...), bolt::MakeIntSequence<sizeof...(TAllocationArgs)>{});
 	}
 
 	ManagedBuffers &buffers () {
@@ -220,23 +220,23 @@ public:
 
 private:
 	template <typename TTuple, int... tI>
-	void AllocateImpl(bolt::mgt::GpuMemoryManager* gpu, const TTuple &arguments, bolt::IntSequence<tI...>) {
+	void allocateImpl(bolt::mgt::GpuMemoryManager* gpu, const TTuple &arguments, bolt::IntSequence<tI...>) {
 		std::initializer_list<int> {
-			(this->AllocateOneImpl<
+			(this->allocateOneImpl<
 				typename std::tuple_element<tI, TTuple>::type,
 				typename bolt::Index<tI, TBufferTypes...>::type,
 				tI>(gpu, std::get<tI>(arguments)), 0)... };
 	}
 
 	template<typename TArgument, typename TBuffer, int tIndex>
-	void AllocateOneImpl(bolt::mgt::GpuMemoryManager* gpu, const TArgument &argument) {
-		AllocateOneHelper<tIndex, TBuffer>::Call(&buffers_, gpu, argument);
+	void allocateOneImpl(bolt::mgt::GpuMemoryManager* gpu, const TArgument &argument) {
+		AllocateOneHelper<tIndex, TBuffer>::call(&buffers_, gpu, argument);
 	}
 
 	template <typename TTuple, int... tI>
-	static int64_t EstimateImpl(const TTuple &arguments, bolt::IntSequence<tI...>) {
+	static int64_t estimateImpl(const TTuple &arguments, bolt::IntSequence<tI...>) {
 		auto sizes = std::initializer_list<int64_t> {
-			EstimateOneImpl<
+			estimateOneImpl<
 				typename std::tuple_element<tI, TTuple>::type,
 				typename bolt::Index<tI, TBufferTypes...>::type,
 				tI>(std::get<tI>(arguments))... };
@@ -244,21 +244,21 @@ private:
 	}
 
 	template<typename TArgument, typename TBuffer, int tIndex>
-	static int64_t EstimateOneImpl(const TArgument &argument) {
-		return AllocateOneHelper<tIndex, TBuffer>::Estimate(argument);
+	static int64_t estimateOneImpl(const TArgument &argument) {
+		return AllocateOneHelper<tIndex, TBuffer>::estimate(argument);
 	}
 
 	template<int tIndex, typename TBuffer>
 	struct AllocateOneHelper {
 
 		template<typename TBuffers, typename TArgument>
-		static void Call(TBuffers *buffers, bolt::mgt::GpuMemoryManager* gpu, const TArgument &argument) {
+		static void call(TBuffers *buffers, bolt::mgt::GpuMemoryManager* gpu, const TArgument &argument) {
 			bolt::mgt::ImageDescriptor<TBuffer> descriptor(argument);
 			std::get<tIndex>(*buffers) = gpu->getBuffer(descriptor);
 		}
 
 		template<typename TArgument>
-		static int64_t Estimate(const TArgument &argument) {
+		static int64_t estimate(const TArgument &argument) {
 			return bolt::mgt::getImageSizeInBytesImpl<typename TBuffer::Element>(argument);
 		}
 	};
@@ -266,14 +266,14 @@ private:
 	template<int tIndex, int tDim, typename TPolicy>
 	struct AllocateOneHelper<tIndex, bolt::FftCalculator<tDim, TPolicy>> {
 		template<typename TBuffers, typename ...TArguments>
-		static void Call(TBuffers *buffers, bolt::mgt::GpuMemoryManager* gpu, const std::tuple<TArguments...> &arguments) {
-			bolt::mgt::ImageDescriptor<bolt::FftCalculator<tDim, TPolicy>> descriptor(arguments);
+		static void call(TBuffers *buffers, bolt::mgt::GpuMemoryManager* gpu, const std::tuple<TArguments...> &arguments) {
+			bolt::mgt::ImageDescriptor<bolt::FftCalculator<tDim, TPolicy>> descriptor(std::get<0>(arguments));
 			std::get<tIndex>(*buffers) = gpu->getBuffer(descriptor);
 		}
 
 		template<typename ...TArguments>
-		static int64_t Estimate(const std::tuple<TArguments...> &arguments) {
-			return bolt::FftCalculator<tDim, TPolicy>::EstimateWorkArea(arguments);
+		static int64_t estimate(const std::tuple<TArguments...> &arguments) {
+			return bolt::FftCalculator<tDim, TPolicy>::estimateWorkArea(std::get<0>(arguments), std::get<1>(arguments));
 		}
 
 

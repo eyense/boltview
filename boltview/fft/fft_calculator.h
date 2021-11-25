@@ -14,8 +14,10 @@
 #include <iomanip>
 
 
+#if defined(__CUDACC__)
 #include <boltview/device_image.h>
 #include <boltview/device_image_view.h>
+#endif
 #include <boltview/host_image.h>
 
 #include <boltview/math/complex.h>
@@ -226,8 +228,8 @@ struct FileInfoTag{};
 				BOLT_DFORMAT(msg); \
 				auto e = ::bolt::CuFFTError(); \
 				e << bolt::MessageErrorInfo(msg); \
-				e << boost::error_info<LineInfoTag,int>(__LINE__);\
-				e << boost::error_info<FileInfoTag,std::string>(__FILE__);\
+				e << boost::error_info<::bolt::LineInfoTag,int>(__LINE__);\
+				e << boost::error_info<::bolt::FileInfoTag,std::string>(__FILE__);\
 				BOLT_THROW(e);\
 			}\
 		} while (false);

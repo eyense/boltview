@@ -14,4 +14,4 @@ macro(BoltView_breakpoints TARGET_NAME OUTPUT_FILE FILE_LIST)
 		COMMAND ${BOLT_BREAKPOINTS_SH_PATH} ${OUTPUT_FILE} ${templist}
 		DEPENDS ${${FILE_LIST}}
 	)
-endmacro(breakpoints)
+endmacro(BoltView_breakpoints)
