@@ -14,7 +14,7 @@ namespace bolt {
 class ExceptionBase: public virtual boost::exception, public virtual std::exception {
 public:
 	const char* what() const noexcept override {
-		return boost::diagnostic_information(*this).c_str();
+		return boost::diagnostic_information_what(*this); // Can't use boost::diagnostic_information(*this) - may lead to infinite recursion
 	}
 };
 
