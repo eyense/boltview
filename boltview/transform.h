@@ -127,7 +127,7 @@ transform(TInView in_view, TOutView out_view, TFunctor functor, TPolicy policy, 
 		return;
 	}
 	detail::TransformFunctor<TFunctor, TInView, TOutView, TPolicy> lambda (functor, out_view);
-	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::ViewIndexingLocator<TInView>>::run(in_view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::ViewIndexingLocator<TInView>>::run(in_view, out_view, lambda, policy, cuda_stream);
 }
 
 
@@ -200,7 +200,7 @@ transformPosition(TInView in_view, TOutView out_view, TFunctor functor, TPolicy 
 		return;
 	}
 
-	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::ViewIndexingLocator<TInView>>::run(in_view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::ViewIndexingLocator<TInView>>::run(in_view, out_view, lambda, policy, cuda_stream);
 }
 
 /// Applies an operation on each element of the input view and stores the result in the output view, Functor obtains also element index as an argument together with element value.
@@ -305,7 +305,7 @@ transformLocator(TInView in_view, TOutView out_view, TFunctor functor, TPolicy p
 	}
 
 	detail::TransformLocatorFunctor<TFunctor, TInView, TOutView, TPolicy> lambda (functor, out_view);
-	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::LocatorConstructor<TInView, TPolicy::kPreloadToSharedMemory> >::run(in_view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TInView::kIsDeviceView && TOutView::kIsDeviceView, detail::LocatorConstructor<TInView, TPolicy::kPreloadToSharedMemory> >::run(in_view, out_view, lambda, policy, cuda_stream);
 }
 
 /// Applies an operation for each each element of the output view.

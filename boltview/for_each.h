@@ -118,7 +118,7 @@ forEach(TView view, TFunctor functor, TPolicy policy, cudaStream_t cuda_stream =
 		return;
 	}
 	detail::ForEachFunctor<TFunctor, TView, TPolicy> lambda{functor};
-	detail::IterateImplementation<TView::kIsDeviceView, detail::ViewIndexingLocator<TView>>::run(view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TView::kIsDeviceView, detail::ViewIndexingLocator<TView>>::run(view, view, lambda, policy, cuda_stream);
 }
 
 /// Apply functor on each element in passed view
@@ -173,7 +173,7 @@ forEachPosition(TView view, TFunctor functor, TPolicy policy, cudaStream_t cuda_
 		return;
 	}
 	detail::ForEachPositionFunctor<TFunctor, TView, TPolicy> lambda (functor);
-	detail::IterateImplementation<TView::kIsDeviceView, detail::ViewIndexingLocator<TView>>::run(view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TView::kIsDeviceView, detail::ViewIndexingLocator<TView>>::run(view, view, lambda, policy, cuda_stream);
 }
 
 /// Apply functor on each element in passed view together with the element's coordinate.
@@ -248,7 +248,7 @@ forEachLocator(TView view, TFunctor functor, TPolicy policy, cudaStream_t cuda_s
         static_assert(!std::is_reference<typename TView::AccessType>::value || std::is_const<typename TView::AccessType>::value,
 		"ForeachLocator should be used on constant view. If you try modifying the view you will get race conditions.");
 	detail::ForEachLocatorFunctor<TFunctor, TView, TPolicy> lambda{functor};
-	detail::IterateImplementation<TView::kIsDeviceView, detail::LocatorConstructor<TView, TPolicy::kPreloadToSharedMemory> >::run(view, lambda, policy, cuda_stream);
+	detail::IterateImplementation<TView::kIsDeviceView, detail::LocatorConstructor<TView, TPolicy::kPreloadToSharedMemory> >::run(view, view, lambda, policy, cuda_stream);
 }
 
 /// Applies an operation for each each element of the view.

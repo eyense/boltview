@@ -13,16 +13,16 @@ namespace bolt {
 namespace detail {
 #if defined(__CUDACC__)
 
-template <typename TView, typename TFunctor, typename TPolicy, typename TLocator>
+template <typename TView_In, typename TView_Out, typename TFunctor, typename TPolicy, typename TLocator>
 BOLT_GLOBAL void
-kernelIteration(const TView view, const TFunctor functor, const TPolicy policy)
+kernelIteration(const TView_In view, const TView_Out view_out, const TFunctor functor, const TPolicy policy)
 {
 	const int pointCount = policy.pointCountPerKernel(view);
-	const auto coordOrig = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView>::value>();
+	const auto coordOrig = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView_In>::value>();
 	const auto extents = dataSize(view);
 
 	for (int point = 0; point < pointCount; ++point) {
-		const auto coord = policy.pointCoordinates(view, coordOrig, point);
+		const auto coord = policy.pointCoordinates(view_out, coordOrig, point);
 		auto locator = TLocator::create(view, coord, policy);
 		if (coord < extents) {
 			functor(locator, coord);
@@ -30,16 +30,16 @@ kernelIteration(const TView view, const TFunctor functor, const TPolicy policy)
 	}
 }
 
-template <typename TView, typename TFunctor, typename TPolicy, int pointCount, typename TLocator>
+template <typename TView_In, typename TView_Out, typename TFunctor, typename TPolicy, int pointCount, typename TLocator>
 BOLT_GLOBAL void
-kernelIterationN(const TView view, const TFunctor functor, const TPolicy policy)
+kernelIterationN(const TView_In view, const TView_Out view_out, const TFunctor functor, const TPolicy policy)
 {
-	const auto coordOrig = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView>::value>();
-	const auto extents = dataSize(view);
+	const auto coordOrig = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView_In>::value>();
+	const auto extents = dataSize(view_out);
 
 	#pragma unroll pointCount
 	for (int point = 0; point < pointCount; ++point) {
-		const auto coord = policy.pointCoordinates(view, coordOrig, point);
+		const auto coord = policy.pointCoordinates(view_out, coordOrig, point);
 		auto locator = TLocator::create(view, coord, policy);
 		if (coord < extents) {
 			functor(locator, coord);
@@ -47,12 +47,12 @@ kernelIterationN(const TView view, const TFunctor functor, const TPolicy policy)
 	}
 }
 
-template <typename TView, typename TFunctor, typename TPolicy, typename TLocator>
+template <typename TView_In, typename TView_Out, typename TFunctor, typename TPolicy, typename TLocator>
 BOLT_GLOBAL void
-kernelIteration1(const TView view, const TFunctor functor, const TPolicy policy)
+kernelIteration1(const TView_In view, const TView_Out view_out, const TFunctor functor, const TPolicy policy)
 {
-	const auto coord = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView>::value>();
-	const auto extents = dataSize(view);
+	const auto coord = mapBlockIdxAndThreadIdxToViewCoordinates<DataDimension<TView_In>::value>();
+	const auto extents = dataSize(view_out);
 	auto locator = TLocator::create(view, coord, policy);
 	if (coord < extents)
 	{
@@ -217,14 +217,14 @@ template <bool tRunOnDevice, typename TLocator>
 struct IterateImplementation {
 
 #if defined(__CUDACC__)
-	template <typename TView, typename TFunctor, typename TPolicy>
-	static void run(const TView & view, const TFunctor & functor, const TPolicy & policy, const cudaStream_t & cuda_stream) {
+	template <typename TView_In, typename TView_Out, typename TFunctor, typename TPolicy>
+	static void run(const TView_In & view, const TView_Out & view_out, const TFunctor & functor, const TPolicy & policy, const cudaStream_t & cuda_stream) {
 		dim3 blockSize = policy.blockSize();
-		dim3 gridSize = policy.gridCount(view);
+		dim3 gridSize = policy.gridCount(view_out);
 
-		int sharedMemorySize = SharedMem<TView>::RunSharedMemoryCheck(&blockSize, &policy);
+		int sharedMemorySize = SharedMem<TView_Out>::RunSharedMemoryCheck(&blockSize, &policy);
 
-		const int pointCount = policy.pointCountPerKernel(view);
+		const int pointCount = policy.pointCountPerKernel(view_out);
 
 		// solves crash in DeviceTricubicInterpolationTest
 		// the test runs out of registers otherwise
@@ -232,39 +232,39 @@ struct IterateImplementation {
                 // Perhaps more performance testing will be needed....
 		if ( pointCount <= 1)
 		{
-			detail::kernelIteration1<TView, TFunctor, TPolicy, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIteration1<TView_In, TView_Out, TFunctor, TPolicy, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else if ( pointCount <= 2)
 		{
-			detail::kernelIterationN<TView, TFunctor, TPolicy, 2, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIterationN<TView_In, TView_Out, TFunctor, TPolicy, 2, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else if ( pointCount <= 3)
 		{
-			detail::kernelIterationN<TView, TFunctor, TPolicy, 3, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIterationN<TView_In, TView_Out, TFunctor, TPolicy, 3, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else if ( pointCount <= 4)
 		{
-			detail::kernelIterationN<TView, TFunctor, TPolicy, 4, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIterationN<TView_In, TView_Out, TFunctor, TPolicy, 4, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else
 		if ( pointCount <= 5)
 		{
-			detail::kernelIterationN<TView, TFunctor, TPolicy, 5, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIterationN<TView_In, TView_Out, TFunctor, TPolicy, 5, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else if ( pointCount <= 7)
 		{
-			detail::kernelIterationN<TView, TFunctor, TPolicy, 7, TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIterationN<TView_In, TView_Out, TFunctor, TPolicy, 7, TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		else
 		{
-			detail::kernelIteration<TView, TFunctor, TPolicy,TLocator>
-				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, functor, policy);
+			detail::kernelIteration<TView_In, TView_Out, TFunctor, TPolicy,TLocator>
+				<<< gridSize, blockSize, sharedMemorySize, cuda_stream>>>(view, view_out, functor, policy);
 		}
 		BOLT_CHECK_ERROR_STATE("kernelIteration");
 	}
@@ -274,10 +274,10 @@ struct IterateImplementation {
 template<typename TLocator>
 struct IterateImplementation<false, TLocator> {
 
-	template <typename TView, typename TFunctor, typename TPolicy>
-	static void run(const TView & view, const TFunctor & functor, const TPolicy & policy, const cudaStream_t &  /*cuda_stream*/) {
+	template <typename TView_In, typename TView_Out, typename TFunctor, typename TPolicy>
+	static void run(const TView_In & view, const TView_Out & view_out, const TFunctor & functor, const TPolicy & policy, const cudaStream_t &  /*cuda_stream*/) {
 		int i= 0; //Used only for overload resolution
-		detail::iterateHost<TView, TFunctor, TPolicy, TLocator>(view, functor, policy, i);
+		detail::iterateHost<TView_In, TFunctor, TPolicy, TLocator>(view, functor, policy, i);
 	}
 };
 
