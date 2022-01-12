@@ -164,7 +164,7 @@ struct IsTextureView<TextureImageConstView<TElement, tDimension, TCudaType>>  : 
 /// View to the whole texture image, which owns the data.
 /// It provides reference access to the data. It is usable on both host/device sides.
 template<typename TElement, int tDimension, typename TCudaType = DefaultCudaType<TElement>>
-class TextureImageView : public TextureImageConstView<TElement, tDimension> {
+class TextureImageView : public TextureImageConstView<TElement, tDimension, TCudaType> {
 public:
 	static const bool kIsHostView = false;
 	static const bool kIsDeviceView = true;
@@ -175,7 +175,7 @@ public:
 	using SizeType = Vector<TIndex, tDimension>;
 	using IndexType = Vector<TIndex, tDimension>;
 	using CoordinateType = Vector<float, tDimension>;
-	using Predecessor = TextureImageConstView<TElement, tDimension>;
+	using Predecessor = TextureImageConstView<TElement, tDimension, TCudaType>;
 	using Element = typename std::remove_const<TElement>::type;
 	using AccessType = Element;
 
